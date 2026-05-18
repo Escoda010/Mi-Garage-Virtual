@@ -728,14 +728,102 @@ select option { background: var(--surface2); }
 .no-car h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
 .no-car p  { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; max-width: 320px; }
 
+/* ── MODEL SUGGESTIONS ── */
+.model-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.model-suggestion-item {
+  padding: 0.6rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  transition: background 0.1s;
+  border-bottom: 1px solid rgba(42,43,56,0.4);
+}
+
+.model-suggestion-item:last-child { border-bottom: none; }
+.model-suggestion-item:hover { background: var(--surface3); }
+
+.model-suggestion-name { font-weight: 500; }
+
+.model-suggestion-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.model-field-wrap { position: relative; }
+
+.model-autofill-badge {
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(52,211,153,0.08);
+  border: 1px solid rgba(52,211,153,0.2);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--green);
+  margin-top: 0.4rem;
+}
+.model-autofill-badge.visible { display: flex; }
+
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: all 0.15s;
+}
+.hamburger:hover { border-color: var(--accent); color: var(--accent); }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+  z-index: 49;
+}
+.sidebar-overlay.open { display: block; }
+
 @media(max-width:900px){
   .stat-grid { grid-template-columns: 1fr 1fr; }
   .two-col   { grid-template-columns: 1fr; }
 }
 
 @media(max-width:640px){
-  .sidebar { transform: translateX(-100%); }
+  .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; z-index: 50; }
+  .sidebar.open { transform: translateX(0); }
   .main    { margin-left: 0; }
+  .hamburger { display: flex; align-items: center; }
+  .content { padding: 1rem; }
+  .topbar  { padding: 1rem; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .info-card-body { grid-template-columns: 1fr; }
+  .form-row.c2, .form-row.c3 { grid-template-columns: 1fr; }
+  .io-grid { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -769,12 +857,17 @@ select option { background: var(--surface2); }
   </div>
 </aside>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
 <!-- MAIN -->
 <div class="main">
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <div class="page-title" id="pageTitle">Dashboard</div>
+    <div style="display:flex;align-items:center;gap:0.75rem">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+    </div>
     <div class="topbar-actions">
       <div class="km-chip" onclick="openKmModal()" id="kmChip">
         <div class="dot"></div>
@@ -954,7 +1047,13 @@ select option { background: var(--surface2); }
       <div class="form-row c2">
         <div class="field">
           <label>Marca y modelo *</label>
-          <input type="text" id="cName" placeholder="Seat León, Golf GTI...">
+          <div class="model-field-wrap">
+            <input type="text" id="cName" placeholder="Nissan Note, Golf GTI..." autocomplete="off" oninput="onModelInput(this.value)" onblur="setTimeout(hideModelSuggestions,150)">
+            <div class="model-suggestions" id="modelSuggestions" style="display:none"></div>
+          </div>
+          <div class="model-autofill-badge" id="autofillBadge">
+            ✓ Datos rellenados automáticamente — revísalos y ajusta si hace falta
+          </div>
         </div>
         <div class="field">
           <label>Matrícula</label>
@@ -1026,6 +1125,324 @@ select option { background: var(--surface2); }
 <div class="toast" id="toast"></div>
 
 <script>
+// ── CAR MODEL DATABASE ────────────────────────────────────
+// Basada en ventas reales España 2024 (ANFAC) + motorizaciones oficiales
+const CAR_DB = [
+  // ── DACIA (líder ventas España 2024) ──
+  { name:'Dacia Sandero', engine:'1.0 TCe 90cv ECO-G (GLP)', fuel:'GLP',      years:'2021-2024' },
+  { name:'Dacia Sandero', engine:'1.0 TCe 90cv',              fuel:'Gasolina', years:'2021-2024' },
+  { name:'Dacia Sandero', engine:'1.0 SCe 65cv',              fuel:'Gasolina', years:'2021-2024' },
+  { name:'Dacia Sandero Stepway', engine:'1.0 TCe 90cv',      fuel:'Gasolina', years:'2021-2024' },
+  { name:'Dacia Sandero Stepway', engine:'1.0 TCe 90cv ECO-G',fuel:'GLP',      years:'2021-2024' },
+  { name:'Dacia Duster',  engine:'1.0 TCe 90cv ECO-G (GLP)',  fuel:'GLP',      years:'2018-2024' },
+  { name:'Dacia Duster',  engine:'1.3 TCe 150cv',             fuel:'Gasolina', years:'2021-2024' },
+  { name:'Dacia Duster',  engine:'1.5 Blue dCi 115cv',        fuel:'Diésel',   years:'2018-2023' },
+  { name:'Dacia Jogger',  engine:'1.0 TCe 110cv ECO-G (GLP)', fuel:'GLP',      years:'2022-2024' },
+  { name:'Dacia Jogger',  engine:'1.6 E-Tech Hybrid 140cv',   fuel:'Híbrido',  years:'2023-2024' },
+  { name:'Dacia Spring',  engine:'Motor eléctrico 65cv',       fuel:'Eléctrico',years:'2021-2024' },
+
+  // ── TOYOTA ──
+  { name:'Toyota Corolla', engine:'1.8 VVT-iE Hybrid 122cv',   fuel:'Híbrido',  years:'2019-2024' },
+  { name:'Toyota Corolla', engine:'2.0 VVT-iE Hybrid 196cv',   fuel:'Híbrido',  years:'2019-2024' },
+  { name:'Toyota C-HR',    engine:'1.8 VVT-iE Hybrid 122cv',   fuel:'Híbrido',  years:'2023-2024' },
+  { name:'Toyota C-HR',    engine:'2.0 VVT-iE Hybrid 197cv',   fuel:'Híbrido',  years:'2023-2024' },
+  { name:'Toyota C-HR',    engine:'2.0 PHEV 223cv',            fuel:'Híbrido',  years:'2023-2024' },
+  { name:'Toyota Yaris Cross', engine:'1.5 VVT-iE Hybrid 116cv', fuel:'Híbrido', years:'2021-2024' },
+  { name:'Toyota Yaris',   engine:'1.5 VVT-iE Hybrid 116cv',   fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Toyota Yaris',   engine:'1.5 GR Sport 261cv',        fuel:'Gasolina', years:'2020-2024' },
+  { name:'Toyota RAV4',    engine:'2.5 VVT-iE Hybrid 218cv',   fuel:'Híbrido',  years:'2019-2024' },
+  { name:'Toyota RAV4',    engine:'2.5 PHEV 306cv',            fuel:'Híbrido',  years:'2019-2024' },
+  { name:'Toyota GR Yaris',engine:'1.6 Turbo GR 261cv',        fuel:'Gasolina', years:'2020-2024' },
+  { name:'Toyota bZ4X',    engine:'Motor eléctrico 204cv',      fuel:'Eléctrico',years:'2022-2024' },
+
+  // ── SEAT ──
+  { name:'Seat Ibiza',  engine:'1.0 TSI 110cv',  fuel:'Gasolina', years:'2021-2024' },
+  { name:'Seat Ibiza',  engine:'1.0 TSI 95cv',   fuel:'Gasolina', years:'2017-2024' },
+  { name:'Seat Ibiza',  engine:'1.0 MPI 80cv',   fuel:'Gasolina', years:'2017-2024' },
+  { name:'Seat Ibiza',  engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2021-2024' },
+  { name:'Seat Arona',  engine:'1.0 TSI 110cv',  fuel:'Gasolina', years:'2021-2024' },
+  { name:'Seat Arona',  engine:'1.0 TSI 95cv',   fuel:'Gasolina', years:'2017-2024' },
+  { name:'Seat Arona',  engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2021-2024' },
+  { name:'Seat León',   engine:'1.5 TSI 130cv',  fuel:'Gasolina', years:'2020-2024' },
+  { name:'Seat León',   engine:'1.5 eTSI 150cv MHEV', fuel:'Híbrido', years:'2020-2024' },
+  { name:'Seat León',   engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2020-2024' },
+  { name:'Seat León',   engine:'1.4 eHybrid 204cv PHEV', fuel:'Híbrido', years:'2020-2024' },
+  { name:'Seat León ST',engine:'1.5 TSI 130cv',  fuel:'Gasolina', years:'2020-2024' },
+  { name:'Seat León ST',engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2020-2024' },
+  { name:'Seat Ateca',  engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2020-2024' },
+  { name:'Seat Ateca',  engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2016-2024' },
+  { name:'Seat Tarraco',engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2018-2024' },
+  { name:'Seat Tarraco',engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2018-2024' },
+
+  // ── HYUNDAI ──
+  { name:'Hyundai Tucson', engine:'1.6 T-GDI 150cv',           fuel:'Gasolina', years:'2020-2024' },
+  { name:'Hyundai Tucson', engine:'1.6 T-GDI Hybrid 230cv',    fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Hyundai Tucson', engine:'1.6 T-GDI PHEV 265cv',      fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Hyundai Tucson', engine:'1.6 CRDi 136cv',            fuel:'Diésel',   years:'2020-2024' },
+  { name:'Hyundai i20',    engine:'1.0 T-GDI 100cv',           fuel:'Gasolina', years:'2020-2024' },
+  { name:'Hyundai i20',    engine:'1.0 T-GDI 48V MHEV 100cv',  fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Hyundai i30',    engine:'1.5 DPI 110cv',              fuel:'Gasolina', years:'2020-2024' },
+  { name:'Hyundai Kona',   engine:'1.0 T-GDI 120cv',           fuel:'Gasolina', years:'2023-2024' },
+  { name:'Hyundai Kona',   engine:'1.6 GDI Hybrid 141cv',      fuel:'Híbrido',  years:'2023-2024' },
+  { name:'Hyundai Kona Electric', engine:'Motor eléctrico 218cv', fuel:'Eléctrico', years:'2023-2024' },
+  { name:'Hyundai Ioniq 5', engine:'Motor eléctrico 217cv',    fuel:'Eléctrico', years:'2021-2024' },
+  { name:'Hyundai Ioniq 6', engine:'Motor eléctrico 228cv',    fuel:'Eléctrico', years:'2022-2024' },
+
+  // ── MG ──
+  { name:'MG ZS',         engine:'1.5 VTi-tech 106cv',         fuel:'Gasolina', years:'2022-2024' },
+  { name:'MG ZS Hybrid+', engine:'1.5 Hybrid+ 190cv',          fuel:'Híbrido',  years:'2023-2024' },
+  { name:'MG ZS EV',      engine:'Motor eléctrico 177cv',       fuel:'Eléctrico',years:'2019-2024' },
+  { name:'MG4',           engine:'Motor eléctrico 204cv',       fuel:'Eléctrico',years:'2022-2024' },
+  { name:'MG4',           engine:'Motor eléctrico 170cv',       fuel:'Eléctrico',years:'2022-2024' },
+  { name:'MG HS',         engine:'1.5 TGI 162cv',               fuel:'Gasolina', years:'2021-2024' },
+  { name:'MG HS PHEV',    engine:'1.5 PHEV 258cv',              fuel:'Híbrido',  years:'2021-2024' },
+
+  // ── RENAULT ──
+  { name:'Renault Clio',   engine:'1.0 TCe 90cv',               fuel:'Gasolina', years:'2019-2024' },
+  { name:'Renault Clio',   engine:'1.0 TCe 100cv ECO-G (GLP)',  fuel:'GLP',      years:'2019-2024' },
+  { name:'Renault Clio',   engine:'E-Tech Hybrid 145cv',        fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Renault Clio',   engine:'1.5 Blue dCi 100cv',         fuel:'Diésel',   years:'2019-2023' },
+  { name:'Renault Captur', engine:'1.0 TCe 90cv',               fuel:'Gasolina', years:'2019-2024' },
+  { name:'Renault Captur', engine:'1.3 TCe 140cv',              fuel:'Gasolina', years:'2019-2024' },
+  { name:'Renault Captur', engine:'E-Tech Hybrid 145cv',        fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Renault Captur', engine:'E-Tech PHEV 160cv',          fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Renault Megane', engine:'1.3 TCe 140cv',              fuel:'Gasolina', years:'2020-2024' },
+  { name:'Renault Megane E-Tech Electric', engine:'Motor eléctrico 220cv', fuel:'Eléctrico', years:'2022-2024' },
+  { name:'Renault Austral', engine:'1.3 TCe 160cv',             fuel:'Gasolina', years:'2022-2024' },
+  { name:'Renault Austral', engine:'E-Tech Hybrid 200cv',       fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Renault Zoe',    engine:'Motor eléctrico 135cv',       fuel:'Eléctrico',years:'2019-2024' },
+
+  // ── KIA ──
+  { name:'Kia Sportage', engine:'1.6 T-GDI 150cv',              fuel:'Gasolina', years:'2021-2024' },
+  { name:'Kia Sportage', engine:'1.6 T-GDI Hybrid 230cv',       fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Kia Sportage', engine:'1.6 T-GDI PHEV 265cv',         fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Kia Sportage', engine:'1.6 CRDi 136cv',               fuel:'Diésel',   years:'2021-2024' },
+  { name:'Kia Niro',     engine:'1.6 GDI Hybrid 141cv',         fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Kia Niro',     engine:'PHEV 183cv',                    fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Kia Niro EV',  engine:'Motor eléctrico 204cv',         fuel:'Eléctrico',years:'2022-2024' },
+  { name:'Kia EV6',      engine:'Motor eléctrico 229cv RWD',     fuel:'Eléctrico',years:'2021-2024' },
+  { name:'Kia EV6',      engine:'Motor eléctrico 325cv AWD',     fuel:'Eléctrico',years:'2021-2024' },
+  { name:'Kia Picanto',  engine:'1.0 DPI 67cv',                  fuel:'Gasolina', years:'2017-2024' },
+  { name:'Kia Stonic',   engine:'1.0 T-GDI 120cv MHEV',         fuel:'Híbrido',  years:'2021-2024' },
+
+  // ── NISSAN ──
+  { name:'Nissan Qashqai', engine:'1.3 DIG-T 158cv MHEV',       fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Nissan Qashqai', engine:'1.3 DIG-T 140cv',            fuel:'Gasolina', years:'2021-2024' },
+  { name:'Nissan Qashqai', engine:'e-Power 190cv',               fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Nissan Juke',    engine:'1.0 DIG-T 114cv',             fuel:'Gasolina', years:'2019-2024' },
+  { name:'Nissan Juke',    engine:'Hybrid 143cv',                 fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Nissan Micra',   engine:'1.0 IG-T 92cv',               fuel:'Gasolina', years:'2017-2022' },
+  { name:'Nissan Note',    engine:'1.2 DIG-S 98cv',              fuel:'Gasolina', years:'2013-2019' },
+  { name:'Nissan Note',    engine:'1.5 dCi 90cv',                fuel:'Diésel',   years:'2013-2019' },
+  { name:'Nissan Leaf',    engine:'Motor eléctrico 150cv 40kWh', fuel:'Eléctrico',years:'2018-2024' },
+  { name:'Nissan Leaf',    engine:'Motor eléctrico 217cv 62kWh', fuel:'Eléctrico',years:'2019-2024' },
+  { name:'Nissan Ariya',   engine:'Motor eléctrico 218cv',        fuel:'Eléctrico',years:'2022-2024' },
+  { name:'Nissan X-Trail', engine:'1.5 e-Power 204cv',           fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Nissan X-Trail', engine:'1.5 e-Power 213cv AWD',       fuel:'Híbrido',  years:'2022-2024' },
+
+  // ── PEUGEOT ──
+  { name:'Peugeot 2008',  engine:'1.2 PureTech 100cv',           fuel:'Gasolina', years:'2019-2024' },
+  { name:'Peugeot 2008',  engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2019-2024' },
+  { name:'Peugeot e-2008',engine:'Motor eléctrico 136cv',         fuel:'Eléctrico',years:'2019-2024' },
+  { name:'Peugeot 208',   engine:'1.2 PureTech 100cv',           fuel:'Gasolina', years:'2019-2024' },
+  { name:'Peugeot e-208', engine:'Motor eléctrico 136cv',         fuel:'Eléctrico',years:'2019-2024' },
+  { name:'Peugeot 308',   engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2021-2024' },
+  { name:'Peugeot 308',   engine:'1.5 BlueHDi 130cv',            fuel:'Diésel',   years:'2021-2024' },
+  { name:'Peugeot 308',   engine:'1.6 HYbrid 180cv PHEV',        fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Peugeot 3008',  engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2024-2024' },
+  { name:'Peugeot 3008',  engine:'E-3008 Motor eléctrico 213cv', fuel:'Eléctrico',years:'2024-2024' },
+  { name:'Peugeot 5008',  engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2024-2024' },
+
+  // ── VOLKSWAGEN ──
+  { name:'VW T-Roc',  engine:'1.0 TSI 115cv',                    fuel:'Gasolina', years:'2017-2024' },
+  { name:'VW T-Roc',  engine:'1.5 TSI 150cv',                    fuel:'Gasolina', years:'2022-2024' },
+  { name:'VW T-Roc',  engine:'2.0 TDI 150cv',                    fuel:'Diésel',   years:'2017-2024' },
+  { name:'VW Polo',   engine:'1.0 TSI 95cv',                     fuel:'Gasolina', years:'2017-2024' },
+  { name:'VW Polo',   engine:'1.0 MPI 80cv',                     fuel:'Gasolina', years:'2017-2024' },
+  { name:'VW Golf',   engine:'1.5 eTSI 150cv MHEV',              fuel:'Híbrido',  years:'2020-2024' },
+  { name:'VW Golf',   engine:'1.5 TSI 130cv',                    fuel:'Gasolina', years:'2020-2024' },
+  { name:'VW Golf',   engine:'2.0 TDI 150cv',                    fuel:'Diésel',   years:'2020-2024' },
+  { name:'VW Golf',   engine:'1.4 GTE eHybrid 245cv PHEV',       fuel:'Híbrido',  years:'2020-2024' },
+  { name:'VW Golf GTI',  engine:'2.0 TSI 265cv',                 fuel:'Gasolina', years:'2020-2024' },
+  { name:'VW Golf R',    engine:'2.0 TSI 333cv 4Motion',         fuel:'Gasolina', years:'2021-2024' },
+  { name:'VW Tiguan',    engine:'1.5 TSI 150cv',                  fuel:'Gasolina', years:'2024-2024' },
+  { name:'VW Tiguan',    engine:'1.5 eTSI 150cv MHEV',           fuel:'Híbrido',  years:'2024-2024' },
+  { name:'VW Tiguan',    engine:'2.0 TDI 150cv',                  fuel:'Diésel',   years:'2024-2024' },
+  { name:'VW ID.3',      engine:'Motor eléctrico 204cv 58kWh',   fuel:'Eléctrico',years:'2020-2024' },
+  { name:'VW ID.4',      engine:'Motor eléctrico 204cv 77kWh',   fuel:'Eléctrico',years:'2021-2024' },
+  { name:'VW ID.5',      engine:'Motor eléctrico 286cv AWD',     fuel:'Eléctrico',years:'2022-2024' },
+
+  // ── OPEL ──
+  { name:'Opel Corsa',   engine:'1.2 Turbo 100cv',               fuel:'Gasolina', years:'2019-2024' },
+  { name:'Opel Corsa',   engine:'1.2 Turbo 130cv',               fuel:'Gasolina', years:'2023-2024' },
+  { name:'Opel Corsa-e', engine:'Motor eléctrico 136cv',          fuel:'Eléctrico',years:'2019-2024' },
+  { name:'Opel Mokka',   engine:'1.2 Turbo 130cv',               fuel:'Gasolina', years:'2020-2024' },
+  { name:'Opel Mokka-e', engine:'Motor eléctrico 136cv',          fuel:'Eléctrico',years:'2020-2024' },
+  { name:'Opel Astra',   engine:'1.2 Turbo 130cv',               fuel:'Gasolina', years:'2021-2024' },
+  { name:'Opel Astra',   engine:'1.5 Diesel 130cv',              fuel:'Diésel',   years:'2021-2024' },
+  { name:'Opel Astra',   engine:'1.6 Hybrid 180cv PHEV',         fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Opel Crossland',engine:'1.2 Turbo 110cv',              fuel:'Gasolina', years:'2020-2024' },
+  { name:'Opel Grandland',engine:'1.2 Turbo 130cv',              fuel:'Gasolina', years:'2022-2024' },
+  { name:'Opel Grandland',engine:'1.6 Hybrid4 300cv PHEV',       fuel:'Híbrido',  years:'2020-2024' },
+
+  // ── FORD ──
+  { name:'Ford Puma',   engine:'1.0 EcoBoost 125cv MHEV',        fuel:'Híbrido',  years:'2019-2024' },
+  { name:'Ford Puma',   engine:'1.0 EcoBoost 155cv MHEV',        fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Ford Fiesta', engine:'1.0 EcoBoost 95cv',              fuel:'Gasolina', years:'2017-2023' },
+  { name:'Ford Fiesta', engine:'1.0 EcoBoost 125cv',             fuel:'Gasolina', years:'2017-2023' },
+  { name:'Ford Focus',  engine:'1.0 EcoBoost 125cv',             fuel:'Gasolina', years:'2018-2024' },
+  { name:'Ford Focus',  engine:'1.5 EcoBlue 120cv',              fuel:'Diésel',   years:'2018-2024' },
+  { name:'Ford Kuga',   engine:'2.5 Duratec PHEV 225cv',         fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Ford Explorer',engine:'3.0 EcoBoost PHEV 457cv',       fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Ford Mustang Mach-E', engine:'Motor eléctrico 269cv',  fuel:'Eléctrico',years:'2021-2024' },
+
+  // ── SKODA ──
+  { name:'Skoda Octavia',  engine:'1.5 TSI 150cv',               fuel:'Gasolina', years:'2020-2024' },
+  { name:'Skoda Octavia',  engine:'2.0 TDI 150cv',               fuel:'Diésel',   years:'2020-2024' },
+  { name:'Skoda Octavia',  engine:'1.4 iV eHybrid 245cv PHEV',   fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Skoda Octavia Combi', engine:'2.0 TDI 150cv',          fuel:'Diésel',   years:'2020-2024' },
+  { name:'Skoda Fabia',    engine:'1.0 TSI 95cv',                fuel:'Gasolina', years:'2021-2024' },
+  { name:'Skoda Fabia',    engine:'1.0 TSI 110cv',               fuel:'Gasolina', years:'2021-2024' },
+  { name:'Skoda Kamiq',    engine:'1.0 TSI 115cv',               fuel:'Gasolina', years:'2019-2024' },
+  { name:'Skoda Karoq',    engine:'1.5 TSI 150cv',               fuel:'Gasolina', years:'2021-2024' },
+  { name:'Skoda Karoq',    engine:'2.0 TDI 150cv',               fuel:'Diésel',   years:'2017-2024' },
+  { name:'Skoda Kodiaq',   engine:'2.0 TDI 150cv',               fuel:'Diésel',   years:'2017-2024' },
+  { name:'Skoda Enyaq',    engine:'Motor eléctrico 204cv 77kWh', fuel:'Eléctrico',years:'2021-2024' },
+
+  // ── CUPRA ──
+  { name:'Cupra Formentor', engine:'1.5 TSI 150cv',              fuel:'Gasolina', years:'2020-2024' },
+  { name:'Cupra Formentor', engine:'2.0 TSI 310cv 4Drive',       fuel:'Gasolina', years:'2020-2024' },
+  { name:'Cupra Formentor', engine:'1.4 eHybrid 245cv PHEV',     fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Cupra Born',      engine:'Motor eléctrico 231cv 77kWh',fuel:'Eléctrico',years:'2021-2024' },
+  { name:'Cupra Born',      engine:'Motor eléctrico 170cv 58kWh',fuel:'Eléctrico',years:'2021-2024' },
+  { name:'Cupra León',      engine:'1.5 eTSI 150cv MHEV',        fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Cupra León',      engine:'2.0 TSI 300cv',              fuel:'Gasolina', years:'2020-2024' },
+  { name:'Cupra Ateca',     engine:'2.0 TSI 300cv 4Drive',       fuel:'Gasolina', years:'2018-2024' },
+  { name:'Cupra Tavascan',  engine:'Motor eléctrico 340cv AWD',  fuel:'Eléctrico',years:'2024-2024' },
+
+  // ── BMW ──
+  { name:'BMW Serie 1', engine:'118i 136cv',                     fuel:'Gasolina', years:'2019-2024' },
+  { name:'BMW Serie 1', engine:'120i 170cv',                     fuel:'Gasolina', years:'2019-2024' },
+  { name:'BMW Serie 1', engine:'120d 150cv',                     fuel:'Diésel',   years:'2019-2023' },
+  { name:'BMW Serie 3', engine:'320i 184cv',                     fuel:'Gasolina', years:'2018-2024' },
+  { name:'BMW Serie 3', engine:'330e 292cv PHEV',                fuel:'Híbrido',  years:'2019-2024' },
+  { name:'BMW Serie 3', engine:'320d 190cv',                     fuel:'Diésel',   years:'2018-2024' },
+  { name:'BMW X1',      engine:'sDrive18i 136cv',                fuel:'Gasolina', years:'2022-2024' },
+  { name:'BMW X1',      engine:'xDrive25e 245cv PHEV',           fuel:'Híbrido',  years:'2022-2024' },
+  { name:'BMW iX1',     engine:'Motor eléctrico 313cv AWD',      fuel:'Eléctrico',years:'2022-2024' },
+  { name:'BMW X3',      engine:'xDrive20i 184cv',                fuel:'Gasolina', years:'2021-2024' },
+  { name:'BMW X3',      engine:'xDrive20d 190cv',                fuel:'Diésel',   years:'2021-2024' },
+
+  // ── MERCEDES-BENZ ──
+  { name:'Mercedes Clase A', engine:'A180 136cv',                fuel:'Gasolina', years:'2018-2024' },
+  { name:'Mercedes Clase A', engine:'A200 163cv',                fuel:'Gasolina', years:'2018-2024' },
+  { name:'Mercedes Clase A', engine:'A180d 116cv',               fuel:'Diésel',   years:'2018-2024' },
+  { name:'Mercedes Clase C', engine:'C200 204cv MHEV',           fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Mercedes Clase C', engine:'C220d 200cv',               fuel:'Diésel',   years:'2021-2024' },
+  { name:'Mercedes Clase C', engine:'C300e 313cv PHEV',          fuel:'Híbrido',  years:'2021-2024' },
+  { name:'Mercedes GLA',     engine:'GLA 200 163cv',             fuel:'Gasolina', years:'2020-2024' },
+  { name:'Mercedes GLA',     engine:'GLA 250e 218cv PHEV',       fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Mercedes EQA',     engine:'Motor eléctrico 190cv',     fuel:'Eléctrico',years:'2021-2024' },
+  { name:'Mercedes EQB',     engine:'Motor eléctrico 228cv AWD', fuel:'Eléctrico',years:'2021-2024' },
+
+  // ── AUDI ──
+  { name:'Audi A3',  engine:'1.5 TFSI 150cv',                    fuel:'Gasolina', years:'2020-2024' },
+  { name:'Audi A3',  engine:'1.5 TFSI e 204cv PHEV',             fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Audi A3',  engine:'2.0 TDI 150cv',                     fuel:'Diésel',   years:'2020-2024' },
+  { name:'Audi A3 Sportback', engine:'1.5 TFSI 150cv',           fuel:'Gasolina', years:'2020-2024' },
+  { name:'Audi Q3',  engine:'1.5 TFSI 150cv',                    fuel:'Gasolina', years:'2019-2024' },
+  { name:'Audi Q3',  engine:'2.0 TDI 150cv',                     fuel:'Diésel',   years:'2019-2024' },
+  { name:'Audi Q5',  engine:'2.0 TFSI 265cv MHEV',               fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Audi Q5',  engine:'55 TFSIe 367cv PHEV',               fuel:'Híbrido',  years:'2020-2024' },
+  { name:'Audi e-tron', engine:'Motor eléctrico 408cv AWD',       fuel:'Eléctrico',years:'2019-2024' },
+  { name:'Audi Q4 e-tron', engine:'Motor eléctrico 204cv 77kWh', fuel:'Eléctrico',years:'2021-2024' },
+
+  // ── MAZDA ──
+  { name:'Mazda CX-5', engine:'2.0 Skyactiv-G 165cv',            fuel:'Gasolina', years:'2017-2024' },
+  { name:'Mazda CX-5', engine:'2.5 Skyactiv-G 194cv AWD',        fuel:'Gasolina', years:'2017-2024' },
+  { name:'Mazda CX-5', engine:'2.0 Skyactiv-G e-Skyactiv 165cv', fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Mazda CX-30', engine:'2.0 Skyactiv-G 122cv',           fuel:'Gasolina', years:'2019-2024' },
+  { name:'Mazda CX-30', engine:'2.0 e-Skyactiv-X 186cv',         fuel:'Gasolina', years:'2019-2024' },
+  { name:'Mazda 3',     engine:'2.0 e-Skyactiv-X 186cv',         fuel:'Gasolina', years:'2019-2024' },
+  { name:'Mazda MX-5',  engine:'2.0 Skyactiv-G 184cv',           fuel:'Gasolina', years:'2015-2024' },
+  { name:'Mazda MX-5',  engine:'1.5 Skyactiv-G 132cv',           fuel:'Gasolina', years:'2015-2024' },
+  { name:'Mazda CX-60', engine:'3.3 e-Skyactiv-D 254cv MHEV',    fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Mazda CX-60', engine:'2.5 e-Skyactiv PHEV 327cv',      fuel:'Híbrido',  years:'2022-2024' },
+
+  // ── TESLA ──
+  { name:'Tesla Model 3', engine:'Motor eléctrico 283cv RWD',    fuel:'Eléctrico',years:'2019-2024' },
+  { name:'Tesla Model 3', engine:'Motor eléctrico 490cv AWD',    fuel:'Eléctrico',years:'2019-2024' },
+  { name:'Tesla Model Y', engine:'Motor eléctrico 283cv RWD',    fuel:'Eléctrico',years:'2021-2024' },
+  { name:'Tesla Model Y', engine:'Motor eléctrico 450cv AWD',    fuel:'Eléctrico',years:'2021-2024' },
+
+  // ── CITROËN ──
+  { name:'Citroën C3',       engine:'1.2 PureTech 83cv',         fuel:'Gasolina', years:'2020-2024' },
+  { name:'Citroën C3',       engine:'1.2 PureTech 110cv',        fuel:'Gasolina', years:'2020-2024' },
+  { name:'ë-C3',             engine:'Motor eléctrico 113cv',      fuel:'Eléctrico',years:'2024-2024' },
+  { name:'Citroën C3 Aircross', engine:'1.2 PureTech 110cv',     fuel:'Gasolina', years:'2024-2024' },
+  { name:'Citroën C5 X',     engine:'1.6 PureTech 180cv',        fuel:'Gasolina', years:'2022-2024' },
+  { name:'Citroën C5 X',     engine:'1.6 Hybrid 225cv PHEV',     fuel:'Híbrido',  years:'2022-2024' },
+  { name:'Citroën Berlingo', engine:'1.2 PureTech 110cv',        fuel:'Gasolina', years:'2018-2024' },
+];
+
+
+function searchCarModels(query) {
+  if (!query || query.length < 2) return [];
+  const q = query.toLowerCase();
+  return CAR_DB.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8);
+}
+
+function onModelInput(val) {
+  const results = searchCarModels(val);
+  const box = document.getElementById('modelSuggestions');
+  document.getElementById('autofillBadge').classList.remove('visible');
+
+  if (!results.length) { box.style.display = 'none'; return; }
+
+  box.innerHTML = results.map((c, i) => `
+    <div class="model-suggestion-item" onmousedown="selectModel(${i}, '${val}')">
+      <div class="model-suggestion-name">${c.name}</div>
+      <div class="model-suggestion-meta">${c.engine} · ${c.fuel} · ${c.years}</div>
+    </div>`).join('');
+
+  // Store results for selection
+  box._results = results;
+  box.style.display = 'block';
+}
+
+function selectModel(idx, query) {
+  const box = document.getElementById('modelSuggestions');
+  const results = searchCarModels(query) || box._results;
+  const car = results[idx];
+  if (!car) return;
+
+  document.getElementById('cName').value   = car.name;
+  document.getElementById('cEngine').value = car.engine;
+  document.getElementById('cFuel').value   = car.fuel;
+  box.style.display = 'none';
+  document.getElementById('autofillBadge').classList.add('visible');
+}
+
+function hideModelSuggestions() {
+  const box = document.getElementById('modelSuggestions');
+  if (box) box.style.display = 'none';
+}
+
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// Close sidebar on nav item click (mobile)
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => { if (window.innerWidth <= 640) closeSidebar(); });
+});
+
 // ── DEFAULT INTERVALS ──────────────────────────────────────
 const DEF_INT = {
   'filtro de aire':15000,'filtro de habitáculo':15000,'filtro de aceite':10000,
@@ -1137,6 +1554,8 @@ function openAddCarModal() {
   document.getElementById('carModalTitle').textContent = 'Añadir coche';
   ['cName','cPlate','cYear','cEngine'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('cFuel').value = '';
+  document.getElementById('autofillBadge').classList.remove('visible');
+  hideModelSuggestions();
   setColor('#5b8af0');
   openModal('carModal');
 }
@@ -1151,6 +1570,8 @@ function openEditCarModal() {
   document.getElementById('cYear').value   = car.year  || '';
   document.getElementById('cEngine').value = car.engine|| '';
   document.getElementById('cFuel').value   = car.fuel  || '';
+  document.getElementById('autofillBadge').classList.remove('visible');
+  hideModelSuggestions();
   setColor(car.color || '#5b8af0');
   openModal('carModal');
 }
