@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garage Log — Tu taller en el bolsillo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0b0c10;
+  --surface:  #13141a;
+  --surface2: #1c1d26;
+  --surface3: #23242f;
+  --border:   #2a2b38;
+  --text:     #e8e9f0;
+  --muted:    #6b6d84;
+  --accent:   #5b8af0;
+  --accent-glow: rgba(91,138,240,0.15);
+  --green:    #34d399;
+  --yellow:   #fbbf24;
+  --red:      #f87171;
+  --radius:   12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(11,12,16,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.btn-nav {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.btn-nav:hover { opacity: 0.88; }
+
+/* ── LAYOUT ── */
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: 50%;
+  transform: translateX(-50%);
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(91,138,240,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.hero-badge span { color: var(--green); }
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  max-width: 560px;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.hero p {
+  font-size: 1.05rem;
+  color: var(--muted);
+  max-width: 440px;
+  line-height: 1.7;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+  display: inline-block;
+}
+
+.btn-primary:hover  { opacity: 0.88; }
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: none;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+  display: inline-block;
+}
+
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── DASHBOARD PREVIEW ── */
+.preview-wrap {
+  width: 100%;
+  max-width: 560px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: left;
+}
+
+.preview-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.preview-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.preview-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+
+.preview-card-label { font-size: 0.62rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+.preview-card-value { font-size: 1rem; font-weight: 600; font-family: 'Syne', sans-serif; margin-top: 2px; }
+
+.preview-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-alert {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.preview-alert-name { color: var(--text); }
+
+.preview-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.preview-alert-km {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+}
+
+/* ── FEATURES ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.feature-item {
+  padding: 1.5rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: background 0.15s;
+}
+
+.feature-item:hover { background: var(--surface2); }
+.feature-item:nth-child(3n) { border-right: none; }
+.feature-item:nth-child(4), .feature-item:nth-child(5), .feature-item:nth-child(6) { border-bottom: none; }
+
+.feature-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.25rem;
+}
+
+.feature-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.feature-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ── HOW IT WORKS ── */
+.steps {
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  border: 1px solid rgba(91,138,240,0.3);
+  color: var(--accent);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.step-desc {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ── FAQ ── */
+.faq-list {
+  padding: 0.5rem 0;
+}
+
+.faq-item {
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.faq-item:last-child { border-bottom: none; }
+
+.faq-q {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin-bottom: 0.4rem;
+}
+
+.faq-a {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── CTA FINAL ── */
+.cta-final {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-final::before {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 50%;
+  transform: translateX(-50%);
+  width: 400px; height: 200px;
+  background: radial-gradient(ellipse, rgba(91,138,240,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-final h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.75rem;
+  letter-spacing: -0.5px;
+}
+
+.cta-final p {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ── FOOTER ── */
+footer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+footer a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+footer a:hover { color: var(--text); }
+
+@media(max-width:640px){
+  .hero { padding: 3rem 1.25rem; }
+  .preview-cards { grid-template-columns: 1fr 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-item { border-right: none; }
+  .feature-item:nth-child(4), .feature-item:nth-child(5) { border-bottom: 1px solid var(--border); }
+  nav { padding: 0 1rem; }
+  .nav-links a { display: none; }
+  main { padding: 0 1rem 3rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">🔧 Garage Log</a>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#faq">Preguntas frecuentes</a>
+    <a href="app/index.html" class="btn-nav">Abrir la app</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section>
+    <div class="hero">
+      <div class="hero-badge"><span>●</span> Gratuito · Sin registro · Sin servidor</div>
+      <h1>Tu taller en el bolsillo.<br><em>Sin depender de nadie.</em></h1>
+      <p>Lleva el mantenimiento de tu coche tú mismo. Anota cada cambio, descubre cuándo toca el siguiente y encuentra la pieza exacta.</p>
+      <div class="hero-btns">
+        <a href="app/index.html" class="btn-primary">Probar ahora — es gratis</a>
+        <a href="#como-funciona" class="btn-ghost">Cómo funciona</a>
+      </div>
+
+      <!-- DASHBOARD PREVIEW -->
+      <div class="preview-wrap">
+        <div class="preview-label">// vista previa del dashboard</div>
+        <div class="preview-cards">
+          <div class="preview-card">
+            <div class="preview-card-label">km actuales</div>
+            <div class="preview-card-value">87.500</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-card-label">total gastado</div>
+            <div class="preview-card-value">342 €</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-card-label">intervenciones</div>
+            <div class="preview-card-value">12</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-card-label">próximo</div>
+            <div class="preview-card-value" style="color:var(--yellow)">+2.500 km</div>
+          </div>
+        </div>
+        <div class="preview-alerts">
+          <div class="preview-alert">
+            <div style="display:flex;align-items:center">
+              <div class="preview-dot" style="background:var(--green)"></div>
+              <span class="preview-alert-name">Aceite motor</span>
+            </div>
+            <span class="preview-alert-km" style="color:var(--green)">+7.500 km</span>
+          </div>
+          <div class="preview-alert">
+            <div style="display:flex;align-items:center">
+              <div class="preview-dot" style="background:var(--yellow)"></div>
+              <span class="preview-alert-name">Filtro de aire</span>
+            </div>
+            <span class="preview-alert-km" style="color:var(--yellow)">+2.500 km</span>
+          </div>
+          <div class="preview-alert">
+            <div style="display:flex;align-items:center">
+              <div class="preview-dot" style="background:var(--red)"></div>
+              <span class="preview-alert-name">Escobillas</span>
+            </div>
+            <span class="preview-alert-km" style="color:var(--red)">VENCIDO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section>
+    <div style="padding:1.5rem 1.75rem 0.75rem">
+      <div class="section-label">Qué incluye</div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🚗</div>
+        <div class="feature-title">Varios coches</div>
+        <div class="feature-desc">Gestiona todos tus coches en un mismo sitio, cada uno con su historial y color propio.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚠️</div>
+        <div class="feature-title">Alertas de mantenimiento</div>
+        <div class="feature-desc">Verde, naranja o rojo según lo que te queda para cada cambio. Sin sorpresas.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Gastos por mes</div>
+        <div class="feature-desc">Gráfica con lo que te gastas cada mes en tu coche para que controles el presupuesto.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💡</div>
+        <div class="feature-title">Consejos por pieza</div>
+        <div class="feature-desc">Cuándo toca cambiarla y señales de desgaste para cada intervención, explicado claro.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛒</div>
+        <div class="feature-title">Encuentra la pieza</div>
+        <div class="feature-desc">Links directos a Amazon y Autodoc con la búsqueda ya hecha para tu modelo exacto.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💾</div>
+        <div class="feature-title">Exporta tus datos</div>
+        <div class="feature-desc">Descarga tu historial en CSV o JSON cuando quieras. Tus datos son siempre tuyos.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="como-funciona">
+    <div style="padding:1.5rem 1.75rem 0.5rem">
+      <div class="section-label">Cómo funciona</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Añade tu coche</div>
+          <div class="step-desc">Escribe el modelo y la app rellena el motor y combustible automáticamente. Puedes añadir foto, matrícula y año.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Registra cada intervención</div>
+          <div class="step-desc">Qué hiciste, a cuántos km y cuánto te costó. En 30 segundos tienes el registro guardado con el próximo cambio calculado.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Mira el dashboard</div>
+          <div class="step-desc">Alertas de lo que toca, gráfica de gastos del mes y ficha completa del coche. Todo en un vistazo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div style="padding:1.5rem 1.75rem 0.75rem">
+      <div class="section-label">Preguntas frecuentes</div>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">¿Es gratis?</div>
+        <div class="faq-a">Sí, completamente. Sin suscripción ni sorpresas. Solo abre la app y úsala.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Dónde se guardan mis datos?</div>
+        <div class="faq-a">En tu propio navegador. No se suben a ningún servidor ni los vemos nosotros. Son solo tuyos.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Puedo perder mis datos?</div>
+        <div class="faq-a">Si limpias el navegador, sí. Por eso la app tiene exportación a JSON — haz una copia de vez en cuando y reimporta cuando quieras.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Funciona con cualquier coche?</div>
+        <div class="faq-a">Sí. Tenemos una base de datos con más de 150 modelos para autocompletar, pero puedes añadir cualquier coche a mano.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Necesito crear una cuenta?</div>
+        <div class="faq-a">No. La app funciona sin registro, sin email y sin contraseña. Entras y ya está.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section>
+    <div class="cta-final">
+      <h2>¿A qué esperas?</h2>
+      <p>Tu coche te lo agradecerá.</p>
+      <a href="app/index.html" class="btn-primary" style="margin-top:0.25rem">Abrir Garage Log</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>🔧 Garage Log — Hecho con ganas por un manitas</span>
+  <a href="privacidad.html">Política de privacidad</a>
+</footer>
+
+</body>
+</html>
