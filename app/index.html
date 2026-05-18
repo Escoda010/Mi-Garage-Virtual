@@ -728,6 +728,65 @@ select option { background: var(--surface2); }
 .no-car h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
 .no-car p  { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; max-width: 320px; }
 
+/* ── AFFILIATE BUTTONS ── */
+.affiliate-bar {
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+.affiliate-bar.visible { display: flex; }
+
+.affiliate-bar-title {
+  font-size: 0.65rem;
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.affiliate-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+.affiliate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+  border: none;
+}
+.affiliate-btn:active { transform: scale(0.97); }
+.affiliate-btn:hover  { opacity: 0.88; }
+
+.affiliate-btn.amazon  { background: #FF9900; color: #000; }
+.affiliate-btn.autodoc { background: #e53935; color: #fff; }
+
+.affiliate-btn .btn-icon { font-size: 1rem; }
+
+/* Inline in historial table */
+.inline-affiliate { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.inline-affiliate a {
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.inline-affiliate a:hover { opacity: 0.8; }
+.inline-affiliate .ia { background: #FF9900; color: #000; }
+.inline-affiliate .id { background: #e53935; color: #fff; }
+
 /* ── MODEL SUGGESTIONS ── */
 .model-suggestions {
   position: absolute;
@@ -978,6 +1037,30 @@ select option { background: var(--surface2); }
             <input type="date" id="fDate">
           </div>
         </div>
+
+        <!-- INFO CARD -->
+        <div class="info-card" id="infoCard" style="display:none;flex-direction:column;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--car-accent);border-radius:10px;padding:1rem 1.1rem;animation:fadeSlide 0.2s ease">
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <span id="infoIcon" style="font-size:1.1rem"></span>
+            <div id="infoName" style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem"></div>
+            <div id="infoInterval" style="margin-left:auto;display:inline-flex;align-items:center;gap:0.3rem;background:rgba(91,138,240,0.1);border:1px solid rgba(91,138,240,0.25);border-radius:20px;padding:3px 10px;font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--accent);white-space:nowrap"></div>
+          </div>
+          <div id="infoBody" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem"></div>
+        </div>
+
+        <!-- AFFILIATE BAR -->
+        <div class="affiliate-bar" id="affiliateBar">
+          <div class="affiliate-bar-title">🛒 Buscar esta pieza para tu coche</div>
+          <div class="affiliate-btns">
+            <a id="btnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon">
+              <span class="btn-icon">📦</span> Ver en Amazon
+            </a>
+            <a id="btnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc">
+              <span class="btn-icon">🔧</span> Ver en Autodoc
+            </a>
+          </div>
+        </div>
+
         <div class="form-row c3">
           <div class="field">
             <label>Km realizados *</label>
@@ -1096,6 +1179,8 @@ select option { background: var(--surface2); }
       </div>
     </div>
     <div class="modal-footer">
+      <button class="btn-secondary" onclick="suggestModel()" title="¿Tu modelo no aparece? Sugiérelo">💡 Sugerir modelo</button>
+      <div style="flex:1"></div>
       <button class="btn-secondary" onclick="closeModal('carModal')">Cancelar</button>
       <button class="btn-primary" onclick="saveCar()">Guardar</button>
     </div>
@@ -1126,8 +1211,8 @@ select option { background: var(--surface2); }
 
 <script>
 // ── CAR MODEL DATABASE ────────────────────────────────────
-// Basada en ventas reales España 2024 (ANFAC) + motorizaciones oficiales
-const CAR_DB = [
+// Se carga desde cars.json al arrancar
+let CAR_DB = [
   // ── DACIA (líder ventas España 2024) ──
   { name:'Dacia Sandero', engine:'1.0 TCe 90cv ECO-G (GLP)', fuel:'GLP',      years:'2021-2024' },
   { name:'Dacia Sandero', engine:'1.0 TCe 90cv',              fuel:'Gasolina', years:'2021-2024' },
@@ -1384,6 +1469,38 @@ const CAR_DB = [
   { name:'Citroën C5 X',     engine:'1.6 Hybrid 225cv PHEV',     fuel:'Híbrido',  years:'2022-2024' },
   { name:'Citroën Berlingo', engine:'1.2 PureTech 110cv',        fuel:'Gasolina', years:'2018-2024' },
 ];
+
+// Carga cars.json externo y lo fusiona con la base local
+fetch('cars.json')
+  .then(r => { if (!r.ok) throw new Error('no cars.json'); return r.json(); })
+  .then(data => { CAR_DB = data; })
+  .catch(() => {}); // si falla usa la base local vacía (o lo que haya)
+
+function suggestModel() {
+  const name   = document.getElementById('cName').value.trim();
+  const engine = document.getElementById('cEngine').value.trim();
+  const fuel   = document.getElementById('cFuel').value;
+  const year   = document.getElementById('cYear').value;
+  if (!name) { toast('Rellena al menos el nombre del coche.', true); return; }
+
+  const title = encodeURIComponent(`[Sugerencia] Nuevo modelo: ${name}`);
+  const body  = encodeURIComponent(
+`**Modelo sugerido por un usuario de Garage Log**
+
+\`\`\`json
+{
+  "name": "${name}",
+  "engine": "${engine || 'COMPLETAR'}",
+  "fuel": "${fuel || 'COMPLETAR'}",
+  "years": "${year ? year+'-'+year : 'COMPLETAR'}"
+}
+\`\`\`
+
+*Si tienes más versiones del mismo modelo, añádelas también.*`
+  );
+  const url = `https://github.com/escoda010/escoda010.github.io/issues/new?title=${title}&body=${body}&labels=car-suggestion`;
+  window.open(url, '_blank');
+}
 
 
 function searchCarModels(query) {
@@ -1678,6 +1795,8 @@ function addRecord() {
 function clearForm() {
   ['fName','fKm','fInterval','fCost','fNotes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('infoCard').style.display = 'none';
+  document.getElementById('affiliateBar').classList.remove('visible');
 }
 
 function deleteRecord(id) {
@@ -1906,18 +2025,29 @@ function renderHistorial() {
     return;
   }
 
-  tbody.innerHTML = filtered.map(r => `
+  tbody.innerHTML = filtered.map(r => {
+    const carName = getActiveCar()?.name || '';
+    const amzUrl  = buildAmazonUrl(r.name, carName);
+    const adcUrl  = buildAutodocUrl(r.name, carName);
+    return `
     <tr>
       <td style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);white-space:nowrap">${r.date}</td>
-      <td><span class="badge-type">${r.name}</span></td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span class="badge-type">${r.name}</span>
+          <div class="inline-affiliate">
+            <a href="${amzUrl}" target="_blank" rel="noopener" class="ia">📦 Amazon</a>
+            <a href="${adcUrl}" target="_blank" rel="noopener" class="id">🔧 Autodoc</a>
+          </div>
+        </div>
+      </td>
       <td style="font-family:'DM Mono',monospace">${r.km.toLocaleString('es-ES')}</td>
       <td style="font-family:'DM Mono',monospace;color:var(--car-accent)">${(r.km+r.interval).toLocaleString('es-ES')}</td>
       <td style="font-family:'DM Mono',monospace;color:var(--muted);font-size:0.78rem">${r.interval.toLocaleString('es-ES')}</td>
       <td style="color:var(--muted)">${r.cost!=null?r.cost.toFixed(2)+' €':'—'}</td>
       <td style="color:var(--muted);font-size:0.78rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.notes||'—'}</td>
       <td><button class="icon-btn" onclick="deleteRecord('${r.id}')">🗑</button></td>
-    </tr>
-  `).join('');
+    </tr>`}).join('');
 }
 
 // ── IMPORT / EXPORT ───────────────────────────────────────
@@ -2005,10 +2135,222 @@ function isoToDisplay(iso) {
   return `${d}/${m}/${y}`;
 }
 
-// Auto-fill interval
+// ── AFFILIATE CONFIG ───────────────────────────────────────
+// Sustituye estos valores por tus códigos reales cuando los tengas
+const AMAZON_TAG   = 'TU_TAG_AMAZON-21';    // ej: garagelog-21
+const AUTODOC_LANG = 'es';                   // idioma Autodoc
+
+// Términos de búsqueda Amazon por intervención
+const AMAZON_TERMS = {
+  'filtro de aire':              'filtro aire',
+  'filtro de habitáculo':        'filtro habitáculo polen',
+  'filtro de aceite':            'filtro aceite',
+  'aceite motor':                'aceite motor',
+  'pastillas de freno':          'pastillas freno',
+  'discos de freno':             'discos freno',
+  'bujías':                      'bujías',
+  'correa de distribución':      'kit distribución',
+  'filtro de combustible':       'filtro combustible',
+  'líquido de frenos':           'líquido frenos dot',
+  'refrigerante':                'refrigerante anticongelante',
+  'amortiguadores':              'amortiguadores',
+  'neumáticos':                  'neumáticos',
+  'batería':                     'batería coche',
+  'escobillas limpiaparabrisas': 'escobillas limpiaparabrisas',
+  'volante':                     'volante deportivo coche',
+  'pomo de cambios':             'pomo cambios coche',
+};
+
+// Rutas Autodoc por intervención
+const AUTODOC_PATHS = {
+  'filtro de aire':              'filtros-de-aire',
+  'filtro de habitáculo':        'filtros-de-habitaculo',
+  'filtro de aceite':            'filtros-de-aceite',
+  'aceite motor':                'aceites-de-motor',
+  'pastillas de freno':          'pastillas-de-freno',
+  'discos de freno':             'discos-de-freno',
+  'bujías':                      'bujias',
+  'correa de distribución':      'kits-de-distribucion',
+  'filtro de combustible':       'filtros-de-combustible',
+  'líquido de frenos':           'liquido-de-frenos',
+  'refrigerante':                'anticongelante',
+  'amortiguadores':              'amortiguadores',
+  'neumáticos':                  'neumaticos',
+  'batería':                     'baterias-de-arranque',
+  'escobillas limpiaparabrisas': 'escobillas',
+};
+
+function buildAmazonUrl(intervention, carName) {
+  const l = intervention.toLowerCase();
+  let term = intervention;
+  for (const [k, v] of Object.entries(AMAZON_TERMS)) {
+    if (l.includes(k)) { term = v; break; }
+  }
+  const query = encodeURIComponent((carName ? carName + ' ' : '') + term);
+  return `https://www.amazon.es/s?k=${query}&tag=${AMAZON_TAG}`;
+}
+
+function buildAutodocUrl(intervention, carName) {
+  const l = intervention.toLowerCase();
+  let path = null;
+  for (const [k, v] of Object.entries(AUTODOC_PATHS)) {
+    if (l.includes(k)) { path = v; break; }
+  }
+  if (path) {
+    // Autodoc busca por modelo en la URL
+    const model = encodeURIComponent(carName || '');
+    return `https://www.autodoc.es/${AUTODOC_LANG}/${path}?q=${model}`;
+  }
+  // Fallback: búsqueda general
+  const query = encodeURIComponent((carName ? carName + ' ' : '') + intervention);
+  return `https://www.autodoc.es/buscar?searchWord=${query}`;
+}
+
+function updateAffiliateBar(intervention) {
+  const bar  = document.getElementById('affiliateBar');
+  const car  = getActiveCar();
+  const name = intervention.trim();
+
+  if (!name || name.length < 3) { bar.classList.remove('visible'); return; }
+
+  const carName = car ? car.name : '';
+  document.getElementById('btnAmazon').href  = buildAmazonUrl(name, carName);
+  document.getElementById('btnAutodoc').href = buildAutodocUrl(name, carName);
+  bar.classList.add('visible');
+}
+
+// ── INFO DATABASE ──────────────────────────────────────────
+const INFO_DB = {
+  'filtro de aire': {
+    icon:'💨', interval:15000,
+    signals:['Aceleración perezosa','Consumo elevado','Humo negro por el escape','Motor que tira al acelerar'],
+    tips:['Revísalo cada vez que hagas el aceite','En zonas con polvo, cámbialo antes']
+  },
+  'filtro de habitáculo': {
+    icon:'🌬️', interval:15000,
+    signals:['Mal olor dentro del coche','Cristales que se empañan rápido','AC menos eficaz','Alergias dentro del coche'],
+    tips:['Suele estar detrás de la guantera, fácil de cambiar','Cámbialo antes del verano']
+  },
+  'filtro de aceite': {
+    icon:'🛢️', interval:10000,
+    signals:['Cámbialo siempre con el aceite','Presión de aceite baja','Ruido metálico en el motor'],
+    tips:['Nunca cambies el aceite sin cambiar el filtro']
+  },
+  'aceite motor': {
+    icon:'🛢️', interval:10000,
+    signals:['Nivel bajo en la varilla','Color oscuro o negro','Ruido metálico en arranque','Consumo de aceite elevado'],
+    tips:['Comprueba el nivel cada 3.000 km','Usa siempre la viscosidad recomendada']
+  },
+  'pastillas de freno': {
+    icon:'🛑', interval:30000,
+    signals:['Chirrido al frenar','Vibración en el pedal','Frena peor','Testigo de frenos encendido'],
+    tips:['Revisa los discos al cambiar las pastillas','Las traseras duran más que las delanteras']
+  },
+  'discos de freno': {
+    icon:'⭕', interval:60000,
+    signals:['Vibración al frenar','Ranuras visibles en el disco','Coche tira a un lado','Ruido metálico constante'],
+    tips:['Cámbialos siempre en pareja por eje','Haz frenadas progresivas tras el cambio']
+  },
+  'bujías': {
+    icon:'⚡', interval:30000,
+    signals:['Arranque difícil','Tirones al acelerar','Consumo elevado','Check engine encendido'],
+    tips:['Las de iridio duran hasta 60.000 km','Comprueba también los cables de alta tensión']
+  },
+  'correa de distribución': {
+    icon:'⚙️', interval:60000,
+    signals:['No esperes síntomas — si se rompe destruye el motor','Revisa también los años, no solo km'],
+    tips:['Máximo 5–6 años aunque no llegues a los km','Cambia también la bomba de agua a la vez']
+  },
+  'filtro de combustible': {
+    icon:'⛽', interval:30000,
+    signals:['Pérdida de potencia','Tirones a alta velocidad','Difícil de arrancar','Motor que se para'],
+    tips:['En diésel es más crítico que en gasolina']
+  },
+  'líquido de frenos': {
+    icon:'💧', interval:40000,
+    signals:['Pedal esponjoso o blando','Frena peor','Líquido oscuro en el depósito'],
+    tips:['Cámbialo cada 2 años mínimo independientemente de km']
+  },
+  'refrigerante': {
+    icon:'🌡️', interval:60000,
+    signals:['Motor se calienta','Testigo de temperatura encendido','Nivel bajo','Olor dulce bajo el capó'],
+    tips:['Nunca abras el tapón en caliente','Mezcla al 50% con agua destilada']
+  },
+  'amortiguadores': {
+    icon:'🔩', interval:80000,
+    signals:['El coche bota en badenes','Cabeceo al frenar','Desgaste irregular de neumáticos','Ruido clonc'],
+    tips:['Cámbialos siempre en pareja por eje','Aprovecha para revisar rótulas y silentblocks']
+  },
+  'neumáticos': {
+    icon:'🔄', interval:40000,
+    signals:['Dibujo bajo 1,6mm (mínimo legal)','Desgaste irregular','Vibraciones en autopista','Más de 5–6 años'],
+    tips:['Comprueba la presión mensualmente','Rota cada 10.000 km para desgaste uniforme']
+  },
+  'batería': {
+    icon:'🔋', interval:50000,
+    signals:['Arranque lento','Testigos al arrancar','Más de 4–5 años','Alternador que no carga'],
+    tips:['En invierno rinden peor','Con el coche parado usa un mantenedor de carga']
+  },
+  'escobillas limpiaparabrisas': {
+    icon:'🌧️', interval:20000,
+    signals:['Rayaduras en el cristal','Ruido al limpiar','Goma cuarteada','Vibración en marcha'],
+    tips:['Cámbialas antes del otoño','No olvides la escobilla trasera']
+  },
+  'volante': {
+    icon:'🎡', interval:null,
+    signals:['Modificación estética','Asegúrate de compatibilidad con el airbag'],
+    tips:['Necesitas un adaptador (moyeu) específico','Un diámetro menor da sensación más deportiva']
+  },
+  'pomo de cambios': {
+    icon:'🕹️', interval:null,
+    signals:['Modificación estética','Comprueba la rosca (M10, M12...)'],
+    tips:['Los pomos más pesados mejoran la sensación de cambio']
+  },
+  'revisión general': {
+    icon:'🔍', interval:20000,
+    signals:['Revisa niveles: aceite, refrigerante, frenos','Comprueba luces, escobillas y neumáticos'],
+    tips:['Hazla coincidiendo con el cambio de aceite']
+  },
+};
+
+function getInfo(name) {
+  const l = name.toLowerCase().trim();
+  for (const [k, v] of Object.entries(INFO_DB)) {
+    if (l.includes(k)) return { key:k, ...v };
+  }
+  return null;
+}
+
+function showInfoCard(name) {
+  const card = document.getElementById('infoCard');
+  const info = getInfo(name);
+  if (!info) { card.style.display = 'none'; return; }
+
+  document.getElementById('infoIcon').textContent = info.icon;
+  document.getElementById('infoName').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  document.getElementById('infoInterval').textContent = info.interval
+    ? '🔁 cada ' + info.interval.toLocaleString('es-ES') + ' km'
+    : '📐 sin intervalo fijo';
+
+  document.getElementById('infoBody').innerHTML = `
+    <div>
+      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Señales de que toca</div>
+      ${info.signals.map(s=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${s}</div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Consejos</div>
+      ${info.tips.map(t=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${t}</div>`).join('')}
+    </div>
+  `;
+  card.style.display = 'flex';
+}
+
+// Auto-fill interval + info card + affiliate bar
 document.getElementById('fName').addEventListener('input', function() {
   const iv = guessInterval(this.value);
   document.getElementById('fInterval').value = iv || '';
+  showInfoCard(this.value);
+  updateAffiliateBar(this.value);
 });
 
 // Auto-fill km
