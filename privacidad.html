@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de privacidad — Garage Log</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0c10; --surface: #13141a; --surface2: #1c1d26;
+  --border: #2a2b38; --text: #e8e9f0; --muted: #6b6d84;
+  --accent: #5b8af0; --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; line-height: 1.7; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(11,12,16,0.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+.nav-back { font-size: 0.85rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.nav-back:hover { color: var(--text); }
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+.doc-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.doc-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.doc-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.doc-intro {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.doc-section {
+  margin-bottom: 2.25rem;
+}
+
+.doc-section h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.doc-section h2::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 1rem;
+  background: var(--accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.doc-section p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 0.65rem;
+}
+
+.doc-section p:last-child { margin-bottom: 0; }
+
+.doc-section ul {
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.doc-section li {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.highlight {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.65;
+  margin-top: 0.5rem;
+}
+
+.highlight strong { color: var(--text); font-weight: 600; }
+
+footer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+@media(max-width:640px){
+  main { padding: 2rem 1rem 4rem; }
+  .doc-title { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">🔧 Garage Log</a>
+  <a class="nav-back" href="index.html">← Volver al inicio</a>
+</nav>
+
+<main>
+
+  <div class="doc-header">
+    <div class="doc-label">Documento legal</div>
+    <div class="doc-title">Política de privacidad</div>
+    <div class="doc-date">Última actualización: mayo de 2025</div>
+  </div>
+
+  <div class="doc-intro">
+    En Garage Log nos tomamos tu privacidad muy en serio. Esta página explica de forma clara y sin tecnicismos qué hacemos con tus datos — o más bien, lo que <em>no</em> hacemos con ellos.
+  </div>
+
+  <div class="doc-section">
+    <h2>Responsable de la web</h2>
+    <p>Garage Log es una aplicación web de uso personal, de acceso gratuito y sin ánimo de lucro, disponible en <strong>escoda010.github.io</strong>. Si tienes cualquier duda relacionada con la privacidad, puedes contactar a través del repositorio público del proyecto en GitHub.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>Qué datos se recogen</h2>
+    <p>Garage Log <strong>no recoge ningún dato personal tuyo</strong>. No hay formularios de registro, no pedimos tu email, no guardamos tu nombre ni ningún otro dato identificativo.</p>
+    <p>Los únicos datos que existen en la app son los que tú introduces voluntariamente — el modelo de tu coche, los kilómetros, las intervenciones de mantenimiento y los costes — y estos datos:</p>
+    <div class="highlight">
+      <strong>Se guardan exclusivamente en tu propio navegador</strong>, mediante la tecnología localStorage. Nunca salen de tu dispositivo ni se transmiten a ningún servidor nuestro.
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <h2>Cómo se almacenan tus datos</h2>
+    <p>Toda la información que introduces en Garage Log se almacena localmente en el navegador que utilizas, en tu propio dispositivo. Nosotros no tenemos ningún servidor donde se guarden tus datos, y por tanto no podemos acceder a ellos, modificarlos ni eliminarlos.</p>
+    <p>Si cambias de dispositivo o de navegador, los datos no se sincronizan automáticamente. Puedes exportarlos manualmente desde la sección "Datos" de la app en formato JSON e importarlos donde quieras.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>Cómo eliminar tus datos</h2>
+    <p>Dado que los datos residen únicamente en tu navegador, tú mismo tienes el control total para eliminarlos en cualquier momento:</p>
+    <ul>
+      <li>Desde la app: ve a "Datos" y elimina cada coche individualmente.</li>
+      <li>Desde el navegador: borra los datos de sitios web o el localStorage de tu navegador en los ajustes de privacidad.</li>
+    </ul>
+    <p>Una vez eliminados desde el navegador, no existe ninguna copia en ningún servidor porque nunca se transfirieron.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>Cookies</h2>
+    <p>Garage Log no utiliza cookies propias de ningún tipo — ni de sesión, ni analíticas, ni publicitarias.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>Servicios de terceros</h2>
+    <p>La app incluye enlaces a servicios externos con fines informativos y comerciales. Al hacer clic en ellos, accedes a webs de terceros con sus propias políticas de privacidad:</p>
+    <ul>
+      <li><strong>Amazon.es</strong> — programa de afiliados. Si compras a través de nuestros enlaces podemos recibir una pequeña comisión sin coste adicional para ti. Amazon puede utilizar cookies propias. Consulta la <a href="https://www.amazon.es/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ" target="_blank" rel="noopener" style="color:var(--accent)">política de privacidad de Amazon</a>.</li>
+      <li><strong>Autodoc.es</strong> — programa de afiliados. Mismo funcionamiento que Amazon. Consulta la <a href="https://www.autodoc.es/privacidad" target="_blank" rel="noopener" style="color:var(--accent)">política de privacidad de Autodoc</a>.</li>
+      <li><strong>Google Fonts</strong> — cargamos tipografías desde los servidores de Google para el correcto funcionamiento visual de la app. Google puede registrar tu IP al servir estos archivos. Consulta la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style="color:var(--accent)">política de privacidad de Google</a>.</li>
+    </ul>
+  </div>
+
+  <div class="doc-section">
+    <h2>Tus derechos (RGPD)</h2>
+    <p>Al no recopilar datos personales identificativos, la mayor parte de los derechos del RGPD (acceso, rectificación, portabilidad, oposición) los ejerces directamente tú desde tu propio navegador, sin necesidad de solicitárnoslo.</p>
+    <p>Si tienes alguna duda o consulta relacionada con la privacidad, puedes contactarnos a través del repositorio del proyecto en GitHub.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>Cambios en esta política</h2>
+    <p>Si en el futuro modificamos esta política de privacidad — por ejemplo, al añadir nuevas funcionalidades — actualizaremos la fecha de "última actualización" que aparece al inicio de este documento. Te recomendamos revisarla de vez en cuando.</p>
+  </div>
+
+</main>
+
+<footer>
+  <span>🔧 Garage Log</span>
+  <a href="index.html">← Volver al inicio</a>
+</footer>
+
+</body>
+</html>
