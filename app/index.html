@@ -1476,30 +1476,65 @@ fetch('cars.json')
   .then(data => { CAR_DB = data; })
   .catch(() => {}); // si falla usa la base local vacía (o lo que haya)
 
+// ── SUPABASE CONFIG ───────────────────────────────────────
+const SUPABASE_URL = 'https://dykhvfhilnobtnnpsnwj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_z89049Kogf6_xm6Jtr_CaQ_egV_K88-';
+
+async function submitSuggestion() {
+  const name   = document.getElementById('sName').value.trim();
+  const engine = document.getElementById('sEngine').value.trim();
+  const fuel   = document.getElementById('sFuel').value;
+  const years  = document.getElementById('sYears').value.trim();
+
+  if (!name)   { toast('Indica el modelo del coche.', true); return; }
+  if (!engine) { toast('Indica el motor.', true); return; }
+  if (!fuel)   { toast('Indica el combustible.', true); return; }
+
+  const btn = document.getElementById('submitSuggestionBtn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/sugerencias`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ name, engine, fuel, years: years || '2020-2024', estado: 'pendiente' })
+    });
+
+    if (res.ok) {
+      closeModal('suggestModal');
+      toast('¡Sugerencia enviada! La revisaremos pronto.');
+      ['sName','sEngine','sYears'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('sFuel').value = '';
+    } else {
+      throw new Error('Error ' + res.status);
+    }
+  } catch(e) {
+    toast('Error al enviar. Inténtalo de nuevo.', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Enviar sugerencia';
+  }
+}
+
 function suggestModel() {
+  // Pre-rellena con lo que haya en el modal de coche
   const name   = document.getElementById('cName').value.trim();
   const engine = document.getElementById('cEngine').value.trim();
   const fuel   = document.getElementById('cFuel').value;
   const year   = document.getElementById('cYear').value;
-  if (!name) { toast('Rellena al menos el nombre del coche.', true); return; }
 
-  const title = encodeURIComponent(`[Sugerencia] Nuevo modelo: ${name}`);
-  const body  = encodeURIComponent(
-`**Modelo sugerido por un usuario de Garage Log**
+  if (name)   document.getElementById('sName').value   = name;
+  if (engine) document.getElementById('sEngine').value = engine;
+  if (fuel)   document.getElementById('sFuel').value   = fuel;
+  if (year)   document.getElementById('sYears').value  = year + '-' + year;
 
-\`\`\`json
-{
-  "name": "${name}",
-  "engine": "${engine || 'COMPLETAR'}",
-  "fuel": "${fuel || 'COMPLETAR'}",
-  "years": "${year ? year+'-'+year : 'COMPLETAR'}"
-}
-\`\`\`
-
-*Si tienes más versiones del mismo modelo, añádelas también.*`
-  );
-  const url = `https://github.com/escoda010/escoda010.github.io/issues/new?title=${title}&body=${body}&labels=car-suggestion`;
-  window.open(url, '_blank');
+  openModal('suggestModal');
 }
 
 
@@ -2375,5 +2410,46 @@ if (!state.cars.length) {
   showPage('dashboard');
 }
 </script>
+
+<!-- MODAL: SUGERIR MODELO -->
+<div class="modal-overlay" id="suggestModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title">💡 Sugerir modelo</div>
+      <button class="modal-close" onclick="closeModal('suggestModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--muted);line-height:1.6">¿Tu coche no está en la lista? Rellena los datos y lo añadiremos a la base de datos para todos los usuarios.</p>
+      <div class="field">
+        <label>Marca y modelo *</label>
+        <input type="text" id="sName" placeholder="Ej: Honda ZR-V">
+      </div>
+      <div class="field">
+        <label>Motor / Versión *</label>
+        <input type="text" id="sEngine" placeholder="Ej: 2.0 e:HEV 184cv">
+      </div>
+      <div class="field">
+        <label>Combustible *</label>
+        <select id="sFuel">
+          <option value="">—</option>
+          <option value="Gasolina">Gasolina</option>
+          <option value="Diésel">Diésel</option>
+          <option value="Híbrido">Híbrido</option>
+          <option value="Eléctrico">Eléctrico</option>
+          <option value="GLP">GLP</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Años de producción</label>
+        <input type="text" id="sYears" placeholder="Ej: 2022-2024">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('suggestModal')">Cancelar</button>
+      <button class="btn-primary" id="submitSuggestionBtn" onclick="submitSuggestion()">Enviar sugerencia</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
