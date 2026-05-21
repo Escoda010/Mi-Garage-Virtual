@@ -1495,7 +1495,7 @@ async function submitSuggestion() {
   btn.textContent = 'Enviando...';
 
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/sugerencias`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/Sugerencias`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
