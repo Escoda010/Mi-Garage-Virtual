@@ -42,10 +42,11 @@
   { "name": "Seat León ST", "engine": "2.0 TDI 150cv", "fuel": "Diésel", "years": "2020-2024" },
   { "name": "Seat Ateca", "engine": "1.5 TSI 150cv", "fuel": "Gasolina", "years": "2020-2024" },
   { "name": "Seat Ateca", "engine": "2.0 TDI 150cv", "fuel": "Diésel", "years": "2016-2024" },
+  { "name": "Seat Ateca", "engine": "1.6 TDI 115 CV", "fuel": "Gasolina", "years": "2018-2019" },
   { "name": "Seat Tarraco", "engine": "1.5 TSI 150cv", "fuel": "Gasolina", "years": "2018-2024" },
   { "name": "Seat Tarraco", "engine": "2.0 TDI 150cv", "fuel": "Diésel", "years": "2018-2024" },
   { "name": "Seat Tarraco", "engine": "1.4 eHybrid 245cv PHEV", "fuel": "Híbrido", "years": "2020-2024" },
-  { "name": "Seat Ateca", "engine": "1.6 TDI 115 CV", "fuel": "Gasolina", "years": "2018-2019" },
+ 
 
   { "name": "Hyundai Tucson", "engine": "1.6 T-GDI 150cv", "fuel": "Gasolina", "years": "2020-2024" },
   { "name": "Hyundai Tucson", "engine": "1.6 T-GDI Hybrid 230cv", "fuel": "Híbrido", "years": "2020-2024" },
