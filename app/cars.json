@@ -111,6 +111,8 @@
   { "name": "Nissan Juke", "engine": "1.0 DIG-T 114cv", "fuel": "Gasolina", "years": "2019-2024" },
   { "name": "Nissan Juke", "engine": "Hybrid 143cv", "fuel": "Híbrido", "years": "2022-2024" },
   { "name": "Nissan Micra", "engine": "1.0 IG-T 92cv", "fuel": "Gasolina", "years": "2017-2022" },
+  { "name": "Nissan Note", "engine": "1.4 Acenta 88cv", "fuel": "Gasolina", "years": "2006-2012" },
+  
   { "name": "Nissan Note", "engine": "1.2 DIG-S 98cv", "fuel": "Gasolina", "years": "2013-2019" },
   { "name": "Nissan Note", "engine": "1.5 dCi 90cv", "fuel": "Diésel", "years": "2013-2019" },
   { "name": "Nissan Leaf", "engine": "Motor eléctrico 150cv 40kWh", "fuel": "Eléctrico", "years": "2018-2024" },
