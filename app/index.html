@@ -768,7 +768,7 @@ select option { background: var(--surface2); }
 }
 
 .hist-card-name {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.88rem;
   color: var(--text);
   margin-bottom: 0.3rem;
@@ -865,6 +865,29 @@ select option { background: var(--surface2); }
 .intervention-chip:hover   { border-color: var(--car-accent); background: var(--surface3); }
 .intervention-chip.selected { border-color: var(--car-accent); background: rgba(91,138,240,0.08); color: var(--car-accent); }
 .intervention-chip .chip-icon { font-size: 1rem; flex-shrink: 0; }
+
+/* ── AFFILIATE ── */
+.affiliate-bar { display:none; flex-direction:column; gap:0.5rem; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:0.9rem 1rem; }
+.affiliate-bar.visible { display:flex; }
+.affiliate-bar-title { font-size:0.65rem; font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+.affiliate-btns { display:flex; gap:0.6rem; flex-wrap:wrap; }
+.affiliate-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-decoration: none !important;
+  border: none;
+  transition: opacity 0.15s;
+}
+.affiliate-btn:hover { opacity: 0.85; }
+.affiliate-btn.amazon  { background: #FF9900; color: #000 !important; }
+.affiliate-btn.autodoc { background: #e53935; color: #fff !important; }
+.affiliate-btn:visited { color: inherit; }
 
 @media(max-width:640px){
   .hist-card-right { display: none; }
@@ -985,26 +1008,12 @@ select option { background: var(--surface2); }
         <div class="panel-title">Nueva intervención</div>
       </div>
 
-      <div class="cat-tabs">
-        <div class="cat-tab active" onclick="filterCatTab('todas',this)">🔧 Todas</div>
-        <div class="cat-tab" onclick="filterCatTab('motor',this)">🛢️ Motor</div>
-        <div class="cat-tab" onclick="filterCatTab('frenos',this)">🛑 Frenos</div>
-        <div class="cat-tab" onclick="filterCatTab('filtros',this)">💨 Filtros</div>
-        <div class="cat-tab" onclick="filterCatTab('suspension',this)">🔩 Suspensión</div>
-        <div class="cat-tab" onclick="filterCatTab('electricidad',this)">⚡ Electricidad</div>
-        <div class="cat-tab" onclick="filterCatTab('ruedas',this)">🔄 Ruedas</div>
-        <div class="cat-tab" onclick="filterCatTab('estetica',this)">🎨 Estética</div>
-        <div class="cat-tab" onclick="filterCatTab('fluidos',this)">💧 Fluidos</div>
-        <div class="cat-tab" onclick="filterCatTab('revision',this)">🔍 Revisión</div>
-      </div>
-
-      <div class="intervention-grid" id="interventionGrid"></div>
-
-      <div class="form-body" style="border-top:1px solid var(--border)">
+      <!-- FORMULARIO ARRIBA -->
+      <div class="form-body" style="border-bottom:1px solid var(--border)">
         <div class="form-row c2">
           <div class="field">
             <label>Qué se hizo *</label>
-            <input type="text" id="fName" placeholder="O escribe aquí..." autocomplete="off" oninput="onFNameInput(this.value)">
+            <input type="text" id="fName" placeholder="Selecciona abajo o escribe aquí..." autocomplete="off" oninput="onFNameInput(this.value)">
           </div>
           <div class="field">
             <label>Fecha *</label>
@@ -1022,10 +1031,10 @@ select option { background: var(--surface2); }
         </div>
 
         <div class="affiliate-bar" id="affiliateBar">
-          <div class="affiliate-bar-title">🛒 Buscar esta pieza para tu coche</div>
+          <div class="affiliate-bar-title">Buscar esta pieza para tu coche</div>
           <div class="affiliate-btns">
-            <a id="btnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon"><span class="btn-icon">📦</span> Ver en Amazon</a>
-            <a id="btnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc"><span class="btn-icon">🔧</span> Ver en Autodoc</a>
+            <a id="btnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon">Ver en Amazon</a>
+            <a id="btnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc">Ver en Autodoc</a>
           </div>
         </div>
 
@@ -1052,6 +1061,23 @@ select option { background: var(--surface2); }
           <button class="btn-secondary" onclick="clearForm()">Limpiar</button>
         </div>
       </div>
+
+      <!-- CATEGORÍAS ABAJO -->
+      <div class="cat-tabs">
+        <div class="cat-tab active" onclick="filterCatTab('todas',this)">Todas</div>
+        <div class="cat-tab" onclick="filterCatTab('motor',this)">Motor</div>
+        <div class="cat-tab" onclick="filterCatTab('frenos',this)">Frenos</div>
+        <div class="cat-tab" onclick="filterCatTab('filtros',this)">Filtros</div>
+        <div class="cat-tab" onclick="filterCatTab('suspension',this)">Suspensión</div>
+        <div class="cat-tab" onclick="filterCatTab('electricidad',this)">Electricidad</div>
+        <div class="cat-tab" onclick="filterCatTab('ruedas',this)">Ruedas</div>
+        <div class="cat-tab" onclick="filterCatTab('estetica',this)">Estética</div>
+        <div class="cat-tab" onclick="filterCatTab('fluidos',this)">Fluidos</div>
+        <div class="cat-tab" onclick="filterCatTab('revision',this)">Revisión</div>
+      </div>
+
+      <div class="intervention-grid" id="interventionGrid"></div>
+
     </div>
   </div>
 
@@ -1949,11 +1975,11 @@ function renderHistorial() {
       <div class="hist-card-body">
         <div class="hist-card-name">${r.name}</div>
         <div class="hist-card-meta">
-          <span>📅 ${r.date}</span>
-          <span>🛣️ <span class="hi">${r.km.toLocaleString('es-ES')} km</span></span>
-          ${r.cost != null ? `<span class="co">💶 ${r.cost.toFixed(2)} €</span>` : ''}
+          <span>${r.date}</span>
+          <span><span class="hi">${r.km.toLocaleString('es-ES')} km</span></span>
+          ${r.cost != null ? `<span class="co">${r.cost.toFixed(2)} €</span>` : ''}
         </div>
-        ${r.notes ? `<div class="hist-card-notes">💬 ${r.notes}</div>` : ''}
+        ${r.notes ? `<div class="hist-card-notes">${r.notes}</div>` : ''}
       </div>
       <div class="hist-card-right">
         <div class="hist-km-badge ${urgCls}" style="color:${urgColor};background:${urgColor}18;border:1px solid ${urgColor}44">${urgLabel}</div>
