@@ -2198,21 +2198,21 @@ const AMAZON_TERMS = {
 
 // Rutas Autodoc por intervención
 const AUTODOC_PATHS = {
-  'filtro de aire':              'filtros-de-aire',
-  'filtro de habitáculo':        'filtros-de-habitaculo',
-  'filtro de aceite':            'filtros-de-aceite',
-  'aceite motor':                'aceites-de-motor',
-  'pastillas de freno':          'pastillas-de-freno',
-  'discos de freno':             'discos-de-freno',
-  'bujías':                      'bujias',
-  'correa de distribución':      'kits-de-distribucion',
-  'filtro de combustible':       'filtros-de-combustible',
-  'líquido de frenos':           'liquido-de-frenos',
-  'refrigerante':                'anticongelante',
-  'amortiguadores':              'amortiguadores',
-  'neumáticos':                  'neumaticos',
-  'batería':                     'baterias-de-arranque',
-  'escobillas limpiaparabrisas': 'escobillas',
+  'filtro de aire':              'filtro-de-aire-10360',
+  'filtro de habitáculo':        'filtro-de-aire-de-habitaculo-10363',
+  'filtro de aceite':            'filtro-de-aceite-10369',
+  'aceite motor':                'aceite-de-motor-10902',
+  'pastillas de freno':          'juego-de-pastillas-de-freno-10286',
+  'discos de freno':             'disco-de-freno-10282',
+  'bujías':                      'bujia-10102',
+  'correa de distribución':      'correa-dentada-10097',
+  'filtro de combustible':       'filtro-de-combustible-10366',
+  'líquido de frenos':           'liquido-de-frenos-10944',
+  'refrigerante':                'anticongelante-10941',
+  'amortiguadores':              'amortiguador-10268',
+  'neumáticos':                  'neumatico-10953',
+  'batería':                     'bateria-de-arranque-10516',
+  'escobillas limpiaparabrisas': 'escobilla-limpiaparabrisas-10152',
 };
 
 function buildAmazonUrl(intervention, carName) {
@@ -2231,14 +2231,16 @@ function buildAutodocUrl(intervention, carName) {
   for (const [k, v] of Object.entries(AUTODOC_PATHS)) {
     if (l.includes(k)) { path = v; break; }
   }
-  if (path) {
-    // Autodoc busca por modelo en la URL
-    const model = encodeURIComponent(carName || '');
-    return `https://www.autodoc.es/${AUTODOC_LANG}/${path}?q=${model}`;
+  // Extraer solo la marca (primera palabra del nombre del coche)
+  const brand = carName ? carName.split(' ')[0].toLowerCase() : null;
+  if (path && brand) {
+    return `https://www.autodoc.es/repuestos/${path}/${brand}`;
+  } else if (path) {
+    return `https://www.autodoc.es/repuestos/${path}`;
   }
   // Fallback: búsqueda general
   const query = encodeURIComponent((carName ? carName + ' ' : '') + intervention);
-  return `https://www.autodoc.es/buscar?searchWord=${query}`;
+  return `https://www.autodoc.es/search?search=${query}`;
 }
 
 function updateAffiliateBar(intervention) {
