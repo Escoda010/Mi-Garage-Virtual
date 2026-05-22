@@ -728,161 +728,147 @@ select option { background: var(--surface2); }
 .no-car h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
 .no-car p  { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; max-width: 320px; }
 
-/* ── AFFILIATE BUTTONS ── */
-.affiliate-bar {
-  display: none;
-  flex-direction: column;
-  gap: 0.5rem;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.9rem 1rem;
-}
-.affiliate-bar.visible { display: flex; }
-
-.affiliate-bar-title {
-  font-size: 0.65rem;
-  font-family: 'DM Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-}
-
-.affiliate-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-
-.affiliate-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-  cursor: pointer;
-  text-decoration: none;
-  transition: opacity 0.15s, transform 0.1s;
-  border: none;
-}
-.affiliate-btn:active { transform: scale(0.97); }
-.affiliate-btn:hover  { opacity: 0.88; }
-
-.affiliate-btn.amazon  { background: #FF9900; color: #000; }
-.affiliate-btn.autodoc { background: #e53935; color: #fff; }
-
-.affiliate-btn .btn-icon { font-size: 1rem; }
-
-/* Inline in historial table */
-.inline-affiliate { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.inline-affiliate a {
-  font-size: 0.68rem;
-  padding: 3px 8px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.15s;
-  white-space: nowrap;
-}
-.inline-affiliate a:hover { opacity: 0.8; }
-.inline-affiliate .ia { background: #FF9900; color: #000; }
-.inline-affiliate .id { background: #e53935; color: #fff; }
-
-/* ── MODEL SUGGESTIONS ── */
-.model-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0; right: 0;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 0 0 8px 8px;
-  z-index: 100;
-  max-height: 200px;
-  overflow-y: auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-
-.model-suggestion-item {
-  padding: 0.6rem 0.85rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  transition: background 0.1s;
-  border-bottom: 1px solid rgba(42,43,56,0.4);
-}
-
-.model-suggestion-item:last-child { border-bottom: none; }
-.model-suggestion-item:hover { background: var(--surface3); }
-
-.model-suggestion-name { font-weight: 500; }
-
-.model-suggestion-meta {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.model-field-wrap { position: relative; }
-
-.model-autofill-badge {
-  display: none;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(52,211,153,0.08);
-  border: 1px solid rgba(52,211,153,0.2);
-  border-radius: 6px;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.75rem;
-  color: var(--green);
-  margin-top: 0.4rem;
-}
-.model-autofill-badge.visible { display: flex; }
-
-/* ── HAMBURGER ── */
-.hamburger {
-  display: none;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  cursor: pointer;
-  padding: 6px 10px;
-  font-size: 1.1rem;
-  line-height: 1;
-  transition: all 0.15s;
-}
-.hamburger:hover { border-color: var(--accent); color: var(--accent); }
-
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(2px);
-  z-index: 49;
-}
-.sidebar-overlay.open { display: block; }
-
 @media(max-width:900px){
   .stat-grid { grid-template-columns: 1fr 1fr; }
   .two-col   { grid-template-columns: 1fr; }
 }
 
 @media(max-width:640px){
-  .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; z-index: 50; }
-  .sidebar.open { transform: translateX(0); }
+  .sidebar { transform: translateX(-100%); }
   .main    { margin-left: 0; }
-  .hamburger { display: flex; align-items: center; }
-  .content { padding: 1rem; }
-  .topbar  { padding: 1rem; }
-  .stat-grid { grid-template-columns: 1fr 1fr; }
-  .info-card-body { grid-template-columns: 1fr; }
-  .form-row.c2, .form-row.c3 { grid-template-columns: 1fr; }
-  .io-grid { grid-template-columns: 1fr; }
-  .two-col { grid-template-columns: 1fr; }
+}
+
+/* ── HISTORIAL CARDS ── */
+.historial-grid { display: flex; flex-direction: column; }
+
+.hist-card {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.hist-card:last-child { border-bottom: none; }
+.hist-card:hover { background: var(--surface2); }
+
+.hist-card-accent { width: 4px; flex-shrink: 0; }
+
+.hist-card-icon {
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.hist-card-body {
+  flex: 1;
+  padding: 0.85rem 0.75rem 0.85rem 0;
+  min-width: 0;
+}
+
+.hist-card-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.hist-card-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.hist-card-meta .hi { color: var(--car-accent); }
+.hist-card-meta .co { color: var(--green); }
+
+.hist-card-notes {
+  margin-top: 0.3rem;
+  font-size: 0.73rem;
+  color: var(--muted);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 360px;
+}
+
+.hist-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.hist-km-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* ── INTERVENTION CATEGORIES ── */
+.cat-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.25rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cat-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.cat-tab:hover  { border-color: var(--accent); color: var(--text); }
+.cat-tab.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+
+.intervention-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 0.5rem;
+  padding: 0.9rem 1.25rem;
+}
+
+.intervention-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.82rem;
+  color: var(--text);
+  user-select: none;
+}
+.intervention-chip:hover   { border-color: var(--car-accent); background: var(--surface3); }
+.intervention-chip.selected { border-color: var(--car-accent); background: rgba(91,138,240,0.08); color: var(--car-accent); }
+.intervention-chip .chip-icon { font-size: 1rem; flex-shrink: 0; }
+
+@media(max-width:640px){
+  .hist-card-right { display: none; }
+  .intervention-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
 </style>
 </head>
@@ -919,17 +905,12 @@ select option { background: var(--surface2); }
   </div>
 </aside>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
 <!-- MAIN -->
 <div class="main">
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <div style="display:flex;align-items:center;gap:0.75rem">
-      <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <div class="page-title" id="pageTitle">Dashboard</div>
-    </div>
+    <div class="page-title" id="pageTitle">Dashboard</div>
     <div class="topbar-actions">
       <div class="km-chip" onclick="openKmModal()" id="kmChip">
         <div class="dot"></div>
@@ -979,61 +960,51 @@ select option { background: var(--surface2); }
     <div class="panel">
       <div class="panel-header">
         <div class="panel-title">Historial de intervenciones</div>
-        <div style="display:flex;gap:0.5rem">
-          <input type="text" id="filterInput" placeholder="Buscar..." style="width:180px;font-size:0.8rem;padding:0.35rem 0.75rem;border-radius:6px" oninput="renderHistorial()">
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <input type="text" id="filterInput" placeholder="Buscar..." style="width:160px;font-size:0.8rem;padding:0.35rem 0.75rem;border-radius:6px" oninput="renderHistorial()">
+          <select id="filterCat" onchange="renderHistorial()" style="font-size:0.78rem;padding:0.35rem 0.6rem;border-radius:6px;width:auto">
+            <option value="">Todas las categorías</option>
+            <option value="motor">Motor</option>
+            <option value="frenos">Frenos</option>
+            <option value="filtros">Filtros</option>
+            <option value="suspension">Suspensión</option>
+            <option value="electricidad">Electricidad</option>
+            <option value="ruedas">Ruedas</option>
+            <option value="estetica">Estética</option>
+          </select>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Intervención</th>
-              <th>Km</th>
-              <th>Próximo km</th>
-              <th>Intervalo</th>
-              <th>Coste</th>
-              <th>Notas</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="historialBody"></tbody>
-        </table>
-      </div>
+      <div class="historial-grid" id="historialBody"></div>
     </div>
   </div>
 
   <!-- NUEVA INTERVENCIÓN -->
   <div id="page-nueva" class="content" style="display:none">
-    <div class="panel" style="max-width:680px">
+    <div class="panel" style="max-width:720px">
       <div class="panel-header">
         <div class="panel-title">Nueva intervención</div>
       </div>
-      <div class="form-body">
+
+      <div class="cat-tabs">
+        <div class="cat-tab active" onclick="filterCatTab('todas',this)">🔧 Todas</div>
+        <div class="cat-tab" onclick="filterCatTab('motor',this)">🛢️ Motor</div>
+        <div class="cat-tab" onclick="filterCatTab('frenos',this)">🛑 Frenos</div>
+        <div class="cat-tab" onclick="filterCatTab('filtros',this)">💨 Filtros</div>
+        <div class="cat-tab" onclick="filterCatTab('suspension',this)">🔩 Suspensión</div>
+        <div class="cat-tab" onclick="filterCatTab('electricidad',this)">⚡ Electricidad</div>
+        <div class="cat-tab" onclick="filterCatTab('ruedas',this)">🔄 Ruedas</div>
+        <div class="cat-tab" onclick="filterCatTab('estetica',this)">🎨 Estética</div>
+        <div class="cat-tab" onclick="filterCatTab('fluidos',this)">💧 Fluidos</div>
+        <div class="cat-tab" onclick="filterCatTab('revision',this)">🔍 Revisión</div>
+      </div>
+
+      <div class="intervention-grid" id="interventionGrid"></div>
+
+      <div class="form-body" style="border-top:1px solid var(--border)">
         <div class="form-row c2">
           <div class="field">
             <label>Qué se hizo *</label>
-            <input type="text" id="fName" list="interventions" placeholder="Filtro de aire, aceite...">
-            <datalist id="interventions">
-              <option value="Filtro de aire">
-              <option value="Filtro de habitáculo">
-              <option value="Filtro de aceite">
-              <option value="Aceite motor">
-              <option value="Pastillas de freno">
-              <option value="Discos de freno">
-              <option value="Bujías">
-              <option value="Correa de distribución">
-              <option value="Filtro de combustible">
-              <option value="Líquido de frenos">
-              <option value="Refrigerante">
-              <option value="Amortiguadores">
-              <option value="Neumáticos">
-              <option value="Batería">
-              <option value="Escobillas limpiaparabrisas">
-              <option value="Volante">
-              <option value="Pomo de cambios">
-              <option value="Revisión general">
-            </datalist>
+            <input type="text" id="fName" placeholder="O escribe aquí..." autocomplete="off" oninput="onFNameInput(this.value)">
           </div>
           <div class="field">
             <label>Fecha *</label>
@@ -1041,8 +1012,7 @@ select option { background: var(--surface2); }
           </div>
         </div>
 
-        <!-- INFO CARD -->
-        <div class="info-card" id="infoCard" style="display:none;flex-direction:column;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--car-accent);border-radius:10px;padding:1rem 1.1rem;animation:fadeSlide 0.2s ease">
+        <div class="info-card" id="infoCard" style="display:none;flex-direction:column;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--car-accent);border-radius:10px;padding:1rem 1.1rem">
           <div style="display:flex;align-items:center;gap:0.5rem">
             <span id="infoIcon" style="font-size:1.1rem"></span>
             <div id="infoName" style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem"></div>
@@ -1051,16 +1021,11 @@ select option { background: var(--surface2); }
           <div id="infoBody" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem"></div>
         </div>
 
-        <!-- AFFILIATE BAR -->
         <div class="affiliate-bar" id="affiliateBar">
           <div class="affiliate-bar-title">🛒 Buscar esta pieza para tu coche</div>
           <div class="affiliate-btns">
-            <a id="btnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon">
-              <span class="btn-icon">📦</span> Ver en Amazon
-            </a>
-            <a id="btnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc">
-              <span class="btn-icon">🔧</span> Ver en Autodoc
-            </a>
+            <a id="btnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon"><span class="btn-icon">📦</span> Ver en Amazon</a>
+            <a id="btnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc"><span class="btn-icon">🔧</span> Ver en Autodoc</a>
           </div>
         </div>
 
@@ -1093,81 +1058,50 @@ select option { background: var(--surface2); }
   <!-- PIEZAS -->
   <div id="page-piezas" class="content" style="display:none">
     <div class="panel" style="max-width:720px">
-      <div class="panel-header">
-        <div class="panel-title">🛒 Buscar piezas para tu coche</div>
-      </div>
+      <div class="panel-header"><div class="panel-title">🛒 Buscar piezas para tu coche</div></div>
       <div style="padding:1.25rem;display:flex;flex-direction:column;gap:1.25rem">
-
-        <!-- Coche activo -->
         <div id="piezasCarInfo" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1.1rem;font-size:0.85rem;color:var(--muted)">
           Selecciona un coche en el sidebar para buscar piezas.
         </div>
-
-        <!-- Buscador -->
         <div class="field">
           <label>¿Qué pieza necesitas?</label>
           <input type="text" id="piezaSearch" list="piezasList" placeholder="Filtro de aire, pastillas, aceite..." autocomplete="off" oninput="onPiezaSearch(this.value)">
           <datalist id="piezasList">
-            <option value="Filtro de aire">
-            <option value="Filtro de habitáculo">
-            <option value="Filtro de aceite">
-            <option value="Aceite motor">
-            <option value="Pastillas de freno">
-            <option value="Discos de freno">
-            <option value="Bujías">
-            <option value="Correa de distribución">
-            <option value="Filtro de combustible">
-            <option value="Líquido de frenos">
-            <option value="Refrigerante">
-            <option value="Amortiguadores">
-            <option value="Neumáticos">
-            <option value="Batería">
-            <option value="Escobillas limpiaparabrisas">
+            <option value="Filtro de aire"><option value="Filtro de habitáculo">
+            <option value="Filtro de aceite"><option value="Aceite motor">
+            <option value="Pastillas de freno"><option value="Discos de freno">
+            <option value="Bujías"><option value="Correa de distribución">
+            <option value="Líquido de frenos"><option value="Refrigerante">
+            <option value="Amortiguadores"><option value="Neumáticos">
+            <option value="Batería"><option value="Escobillas limpiaparabrisas">
           </datalist>
         </div>
-
-        <!-- Resultado -->
         <div id="piezasResult" style="display:none;flex-direction:column;gap:1rem">
-
-          <!-- Info de la pieza -->
           <div id="piezasInfoCard" style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--car-accent);border-radius:10px;padding:1rem 1.1rem">
             <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
               <span id="piezasIcon" style="font-size:1.2rem"></span>
               <div id="piezasName" style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem"></div>
               <div id="piezasInterval" style="margin-left:auto;background:rgba(91,138,240,0.1);border:1px solid rgba(91,138,240,0.25);border-radius:20px;padding:3px 10px;font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--accent)"></div>
             </div>
-            <!-- Historial de esta pieza -->
             <div id="piezasHistory" style="font-size:0.8rem;color:var(--muted);padding-top:0.75rem;border-top:1px solid var(--border);margin-top:0.5rem"></div>
           </div>
-
-          <!-- Botones de compra -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
-            <a id="piezaBtnAmazon" href="#" target="_blank" rel="noopener"
-              style="display:flex;align-items:center;justify-content:center;gap:0.6rem;background:#FF9900;color:#000;border-radius:10px;padding:1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;text-decoration:none;transition:opacity 0.15s"
-              onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
+            <a id="piezaBtnAmazon" href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;background:#FF9900;color:#000;border-radius:10px;padding:1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;text-decoration:none;transition:opacity 0.15s" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
               <span style="font-size:1.2rem">📦</span> Ver en Amazon
             </a>
-            <a id="piezaBtnAutodoc" href="#" target="_blank" rel="noopener"
-              style="display:flex;align-items:center;justify-content:center;gap:0.6rem;background:#e53935;color:#fff;border-radius:10px;padding:1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;text-decoration:none;transition:opacity 0.15s"
-              onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
+            <a id="piezaBtnAutodoc" href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;background:#e53935;color:#fff;border-radius:10px;padding:1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;text-decoration:none;transition:opacity 0.15s" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
               <span style="font-size:1.2rem">🔧</span> Ver en Autodoc
             </a>
           </div>
-
-          <!-- Categorías rápidas -->
           <div>
             <div style="font-family:'DM Mono',monospace;font-size:0.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.6rem">Búsquedas frecuentes</div>
             <div style="display:flex;flex-wrap:wrap;gap:0.4rem" id="quickPiezas"></div>
           </div>
-
         </div>
-
-        <!-- Estado vacío -->
         <div id="piezasEmpty" style="text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem">
           <div style="font-size:2rem;margin-bottom:0.5rem;opacity:0.4">🔍</div>
           <p>Escribe qué pieza necesitas arriba y te mostramos dónde encontrarla para tu coche.</p>
         </div>
-
       </div>
     </div>
   </div>
@@ -1215,13 +1149,7 @@ select option { background: var(--surface2); }
       <div class="form-row c2">
         <div class="field">
           <label>Marca y modelo *</label>
-          <div class="model-field-wrap">
-            <input type="text" id="cName" placeholder="Nissan Note, Golf GTI..." autocomplete="off" oninput="onModelInput(this.value)" onblur="setTimeout(hideModelSuggestions,150)">
-            <div class="model-suggestions" id="modelSuggestions" style="display:none"></div>
-          </div>
-          <div class="model-autofill-badge" id="autofillBadge">
-            ✓ Datos rellenados automáticamente — revísalos y ajusta si hace falta
-          </div>
+          <input type="text" id="cName" placeholder="Seat León, Golf GTI...">
         </div>
         <div class="field">
           <label>Matrícula</label>
@@ -1264,8 +1192,6 @@ select option { background: var(--surface2); }
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary" onclick="suggestModel()" title="¿Tu modelo no aparece? Sugiérelo">💡 Sugerir modelo</button>
-      <div style="flex:1"></div>
       <button class="btn-secondary" onclick="closeModal('carModal')">Cancelar</button>
       <button class="btn-primary" onclick="saveCar()">Guardar</button>
     </div>
@@ -1295,391 +1221,6 @@ select option { background: var(--surface2); }
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CAR MODEL DATABASE ────────────────────────────────────
-// Se carga desde cars.json al arrancar
-let CAR_DB = [
-  // ── DACIA (líder ventas España 2024) ──
-  { name:'Dacia Sandero', engine:'1.0 TCe 90cv ECO-G (GLP)', fuel:'GLP',      years:'2021-2024' },
-  { name:'Dacia Sandero', engine:'1.0 TCe 90cv',              fuel:'Gasolina', years:'2021-2024' },
-  { name:'Dacia Sandero', engine:'1.0 SCe 65cv',              fuel:'Gasolina', years:'2021-2024' },
-  { name:'Dacia Sandero Stepway', engine:'1.0 TCe 90cv',      fuel:'Gasolina', years:'2021-2024' },
-  { name:'Dacia Sandero Stepway', engine:'1.0 TCe 90cv ECO-G',fuel:'GLP',      years:'2021-2024' },
-  { name:'Dacia Duster',  engine:'1.0 TCe 90cv ECO-G (GLP)',  fuel:'GLP',      years:'2018-2024' },
-  { name:'Dacia Duster',  engine:'1.3 TCe 150cv',             fuel:'Gasolina', years:'2021-2024' },
-  { name:'Dacia Duster',  engine:'1.5 Blue dCi 115cv',        fuel:'Diésel',   years:'2018-2023' },
-  { name:'Dacia Jogger',  engine:'1.0 TCe 110cv ECO-G (GLP)', fuel:'GLP',      years:'2022-2024' },
-  { name:'Dacia Jogger',  engine:'1.6 E-Tech Hybrid 140cv',   fuel:'Híbrido',  years:'2023-2024' },
-  { name:'Dacia Spring',  engine:'Motor eléctrico 65cv',       fuel:'Eléctrico',years:'2021-2024' },
-
-  // ── TOYOTA ──
-  { name:'Toyota Corolla', engine:'1.8 VVT-iE Hybrid 122cv',   fuel:'Híbrido',  years:'2019-2024' },
-  { name:'Toyota Corolla', engine:'2.0 VVT-iE Hybrid 196cv',   fuel:'Híbrido',  years:'2019-2024' },
-  { name:'Toyota C-HR',    engine:'1.8 VVT-iE Hybrid 122cv',   fuel:'Híbrido',  years:'2023-2024' },
-  { name:'Toyota C-HR',    engine:'2.0 VVT-iE Hybrid 197cv',   fuel:'Híbrido',  years:'2023-2024' },
-  { name:'Toyota C-HR',    engine:'2.0 PHEV 223cv',            fuel:'Híbrido',  years:'2023-2024' },
-  { name:'Toyota Yaris Cross', engine:'1.5 VVT-iE Hybrid 116cv', fuel:'Híbrido', years:'2021-2024' },
-  { name:'Toyota Yaris',   engine:'1.5 VVT-iE Hybrid 116cv',   fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Toyota Yaris',   engine:'1.5 GR Sport 261cv',        fuel:'Gasolina', years:'2020-2024' },
-  { name:'Toyota RAV4',    engine:'2.5 VVT-iE Hybrid 218cv',   fuel:'Híbrido',  years:'2019-2024' },
-  { name:'Toyota RAV4',    engine:'2.5 PHEV 306cv',            fuel:'Híbrido',  years:'2019-2024' },
-  { name:'Toyota GR Yaris',engine:'1.6 Turbo GR 261cv',        fuel:'Gasolina', years:'2020-2024' },
-  { name:'Toyota bZ4X',    engine:'Motor eléctrico 204cv',      fuel:'Eléctrico',years:'2022-2024' },
-
-  // ── SEAT ──
-  { name:'Seat Ibiza',  engine:'1.0 TSI 110cv',  fuel:'Gasolina', years:'2021-2024' },
-  { name:'Seat Ibiza',  engine:'1.0 TSI 95cv',   fuel:'Gasolina', years:'2017-2024' },
-  { name:'Seat Ibiza',  engine:'1.0 MPI 80cv',   fuel:'Gasolina', years:'2017-2024' },
-  { name:'Seat Ibiza',  engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2021-2024' },
-  { name:'Seat Arona',  engine:'1.0 TSI 110cv',  fuel:'Gasolina', years:'2021-2024' },
-  { name:'Seat Arona',  engine:'1.0 TSI 95cv',   fuel:'Gasolina', years:'2017-2024' },
-  { name:'Seat Arona',  engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2021-2024' },
-  { name:'Seat León',   engine:'1.5 TSI 130cv',  fuel:'Gasolina', years:'2020-2024' },
-  { name:'Seat León',   engine:'1.5 eTSI 150cv MHEV', fuel:'Híbrido', years:'2020-2024' },
-  { name:'Seat León',   engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2020-2024' },
-  { name:'Seat León',   engine:'1.4 eHybrid 204cv PHEV', fuel:'Híbrido', years:'2020-2024' },
-  { name:'Seat León ST',engine:'1.5 TSI 130cv',  fuel:'Gasolina', years:'2020-2024' },
-  { name:'Seat León ST',engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2020-2024' },
-  { name:'Seat Ateca',  engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2020-2024' },
-  { name:'Seat Ateca',  engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2016-2024' },
-  { name:'Seat Tarraco',engine:'1.5 TSI 150cv',  fuel:'Gasolina', years:'2018-2024' },
-  { name:'Seat Tarraco',engine:'2.0 TDI 150cv',  fuel:'Diésel',   years:'2018-2024' },
-
-  // ── HYUNDAI ──
-  { name:'Hyundai Tucson', engine:'1.6 T-GDI 150cv',           fuel:'Gasolina', years:'2020-2024' },
-  { name:'Hyundai Tucson', engine:'1.6 T-GDI Hybrid 230cv',    fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Hyundai Tucson', engine:'1.6 T-GDI PHEV 265cv',      fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Hyundai Tucson', engine:'1.6 CRDi 136cv',            fuel:'Diésel',   years:'2020-2024' },
-  { name:'Hyundai i20',    engine:'1.0 T-GDI 100cv',           fuel:'Gasolina', years:'2020-2024' },
-  { name:'Hyundai i20',    engine:'1.0 T-GDI 48V MHEV 100cv',  fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Hyundai i30',    engine:'1.5 DPI 110cv',              fuel:'Gasolina', years:'2020-2024' },
-  { name:'Hyundai Kona',   engine:'1.0 T-GDI 120cv',           fuel:'Gasolina', years:'2023-2024' },
-  { name:'Hyundai Kona',   engine:'1.6 GDI Hybrid 141cv',      fuel:'Híbrido',  years:'2023-2024' },
-  { name:'Hyundai Kona Electric', engine:'Motor eléctrico 218cv', fuel:'Eléctrico', years:'2023-2024' },
-  { name:'Hyundai Ioniq 5', engine:'Motor eléctrico 217cv',    fuel:'Eléctrico', years:'2021-2024' },
-  { name:'Hyundai Ioniq 6', engine:'Motor eléctrico 228cv',    fuel:'Eléctrico', years:'2022-2024' },
-
-  // ── MG ──
-  { name:'MG ZS',         engine:'1.5 VTi-tech 106cv',         fuel:'Gasolina', years:'2022-2024' },
-  { name:'MG ZS Hybrid+', engine:'1.5 Hybrid+ 190cv',          fuel:'Híbrido',  years:'2023-2024' },
-  { name:'MG ZS EV',      engine:'Motor eléctrico 177cv',       fuel:'Eléctrico',years:'2019-2024' },
-  { name:'MG4',           engine:'Motor eléctrico 204cv',       fuel:'Eléctrico',years:'2022-2024' },
-  { name:'MG4',           engine:'Motor eléctrico 170cv',       fuel:'Eléctrico',years:'2022-2024' },
-  { name:'MG HS',         engine:'1.5 TGI 162cv',               fuel:'Gasolina', years:'2021-2024' },
-  { name:'MG HS PHEV',    engine:'1.5 PHEV 258cv',              fuel:'Híbrido',  years:'2021-2024' },
-
-  // ── RENAULT ──
-  { name:'Renault Clio',   engine:'1.0 TCe 90cv',               fuel:'Gasolina', years:'2019-2024' },
-  { name:'Renault Clio',   engine:'1.0 TCe 100cv ECO-G (GLP)',  fuel:'GLP',      years:'2019-2024' },
-  { name:'Renault Clio',   engine:'E-Tech Hybrid 145cv',        fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Renault Clio',   engine:'1.5 Blue dCi 100cv',         fuel:'Diésel',   years:'2019-2023' },
-  { name:'Renault Captur', engine:'1.0 TCe 90cv',               fuel:'Gasolina', years:'2019-2024' },
-  { name:'Renault Captur', engine:'1.3 TCe 140cv',              fuel:'Gasolina', years:'2019-2024' },
-  { name:'Renault Captur', engine:'E-Tech Hybrid 145cv',        fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Renault Captur', engine:'E-Tech PHEV 160cv',          fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Renault Megane', engine:'1.3 TCe 140cv',              fuel:'Gasolina', years:'2020-2024' },
-  { name:'Renault Megane E-Tech Electric', engine:'Motor eléctrico 220cv', fuel:'Eléctrico', years:'2022-2024' },
-  { name:'Renault Austral', engine:'1.3 TCe 160cv',             fuel:'Gasolina', years:'2022-2024' },
-  { name:'Renault Austral', engine:'E-Tech Hybrid 200cv',       fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Renault Zoe',    engine:'Motor eléctrico 135cv',       fuel:'Eléctrico',years:'2019-2024' },
-
-  // ── KIA ──
-  { name:'Kia Sportage', engine:'1.6 T-GDI 150cv',              fuel:'Gasolina', years:'2021-2024' },
-  { name:'Kia Sportage', engine:'1.6 T-GDI Hybrid 230cv',       fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Kia Sportage', engine:'1.6 T-GDI PHEV 265cv',         fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Kia Sportage', engine:'1.6 CRDi 136cv',               fuel:'Diésel',   years:'2021-2024' },
-  { name:'Kia Niro',     engine:'1.6 GDI Hybrid 141cv',         fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Kia Niro',     engine:'PHEV 183cv',                    fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Kia Niro EV',  engine:'Motor eléctrico 204cv',         fuel:'Eléctrico',years:'2022-2024' },
-  { name:'Kia EV6',      engine:'Motor eléctrico 229cv RWD',     fuel:'Eléctrico',years:'2021-2024' },
-  { name:'Kia EV6',      engine:'Motor eléctrico 325cv AWD',     fuel:'Eléctrico',years:'2021-2024' },
-  { name:'Kia Picanto',  engine:'1.0 DPI 67cv',                  fuel:'Gasolina', years:'2017-2024' },
-  { name:'Kia Stonic',   engine:'1.0 T-GDI 120cv MHEV',         fuel:'Híbrido',  years:'2021-2024' },
-
-  // ── NISSAN ──
-  { name:'Nissan Qashqai', engine:'1.3 DIG-T 158cv MHEV',       fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Nissan Qashqai', engine:'1.3 DIG-T 140cv',            fuel:'Gasolina', years:'2021-2024' },
-  { name:'Nissan Qashqai', engine:'e-Power 190cv',               fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Nissan Juke',    engine:'1.0 DIG-T 114cv',             fuel:'Gasolina', years:'2019-2024' },
-  { name:'Nissan Juke',    engine:'Hybrid 143cv',                 fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Nissan Micra',   engine:'1.0 IG-T 92cv',               fuel:'Gasolina', years:'2017-2022' },
-  { name:'Nissan Note',    engine:'1.2 DIG-S 98cv',              fuel:'Gasolina', years:'2013-2019' },
-  { name:'Nissan Note',    engine:'1.5 dCi 90cv',                fuel:'Diésel',   years:'2013-2019' },
-  { name:'Nissan Leaf',    engine:'Motor eléctrico 150cv 40kWh', fuel:'Eléctrico',years:'2018-2024' },
-  { name:'Nissan Leaf',    engine:'Motor eléctrico 217cv 62kWh', fuel:'Eléctrico',years:'2019-2024' },
-  { name:'Nissan Ariya',   engine:'Motor eléctrico 218cv',        fuel:'Eléctrico',years:'2022-2024' },
-  { name:'Nissan X-Trail', engine:'1.5 e-Power 204cv',           fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Nissan X-Trail', engine:'1.5 e-Power 213cv AWD',       fuel:'Híbrido',  years:'2022-2024' },
-
-  // ── PEUGEOT ──
-  { name:'Peugeot 2008',  engine:'1.2 PureTech 100cv',           fuel:'Gasolina', years:'2019-2024' },
-  { name:'Peugeot 2008',  engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2019-2024' },
-  { name:'Peugeot e-2008',engine:'Motor eléctrico 136cv',         fuel:'Eléctrico',years:'2019-2024' },
-  { name:'Peugeot 208',   engine:'1.2 PureTech 100cv',           fuel:'Gasolina', years:'2019-2024' },
-  { name:'Peugeot e-208', engine:'Motor eléctrico 136cv',         fuel:'Eléctrico',years:'2019-2024' },
-  { name:'Peugeot 308',   engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2021-2024' },
-  { name:'Peugeot 308',   engine:'1.5 BlueHDi 130cv',            fuel:'Diésel',   years:'2021-2024' },
-  { name:'Peugeot 308',   engine:'1.6 HYbrid 180cv PHEV',        fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Peugeot 3008',  engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2024-2024' },
-  { name:'Peugeot 3008',  engine:'E-3008 Motor eléctrico 213cv', fuel:'Eléctrico',years:'2024-2024' },
-  { name:'Peugeot 5008',  engine:'1.2 PureTech 130cv',           fuel:'Gasolina', years:'2024-2024' },
-
-  // ── VOLKSWAGEN ──
-  { name:'VW T-Roc',  engine:'1.0 TSI 115cv',                    fuel:'Gasolina', years:'2017-2024' },
-  { name:'VW T-Roc',  engine:'1.5 TSI 150cv',                    fuel:'Gasolina', years:'2022-2024' },
-  { name:'VW T-Roc',  engine:'2.0 TDI 150cv',                    fuel:'Diésel',   years:'2017-2024' },
-  { name:'VW Polo',   engine:'1.0 TSI 95cv',                     fuel:'Gasolina', years:'2017-2024' },
-  { name:'VW Polo',   engine:'1.0 MPI 80cv',                     fuel:'Gasolina', years:'2017-2024' },
-  { name:'VW Golf',   engine:'1.5 eTSI 150cv MHEV',              fuel:'Híbrido',  years:'2020-2024' },
-  { name:'VW Golf',   engine:'1.5 TSI 130cv',                    fuel:'Gasolina', years:'2020-2024' },
-  { name:'VW Golf',   engine:'2.0 TDI 150cv',                    fuel:'Diésel',   years:'2020-2024' },
-  { name:'VW Golf',   engine:'1.4 GTE eHybrid 245cv PHEV',       fuel:'Híbrido',  years:'2020-2024' },
-  { name:'VW Golf GTI',  engine:'2.0 TSI 265cv',                 fuel:'Gasolina', years:'2020-2024' },
-  { name:'VW Golf R',    engine:'2.0 TSI 333cv 4Motion',         fuel:'Gasolina', years:'2021-2024' },
-  { name:'VW Tiguan',    engine:'1.5 TSI 150cv',                  fuel:'Gasolina', years:'2024-2024' },
-  { name:'VW Tiguan',    engine:'1.5 eTSI 150cv MHEV',           fuel:'Híbrido',  years:'2024-2024' },
-  { name:'VW Tiguan',    engine:'2.0 TDI 150cv',                  fuel:'Diésel',   years:'2024-2024' },
-  { name:'VW ID.3',      engine:'Motor eléctrico 204cv 58kWh',   fuel:'Eléctrico',years:'2020-2024' },
-  { name:'VW ID.4',      engine:'Motor eléctrico 204cv 77kWh',   fuel:'Eléctrico',years:'2021-2024' },
-  { name:'VW ID.5',      engine:'Motor eléctrico 286cv AWD',     fuel:'Eléctrico',years:'2022-2024' },
-
-  // ── OPEL ──
-  { name:'Opel Corsa',   engine:'1.2 Turbo 100cv',               fuel:'Gasolina', years:'2019-2024' },
-  { name:'Opel Corsa',   engine:'1.2 Turbo 130cv',               fuel:'Gasolina', years:'2023-2024' },
-  { name:'Opel Corsa-e', engine:'Motor eléctrico 136cv',          fuel:'Eléctrico',years:'2019-2024' },
-  { name:'Opel Mokka',   engine:'1.2 Turbo 130cv',               fuel:'Gasolina', years:'2020-2024' },
-  { name:'Opel Mokka-e', engine:'Motor eléctrico 136cv',          fuel:'Eléctrico',years:'2020-2024' },
-  { name:'Opel Astra',   engine:'1.2 Turbo 130cv',               fuel:'Gasolina', years:'2021-2024' },
-  { name:'Opel Astra',   engine:'1.5 Diesel 130cv',              fuel:'Diésel',   years:'2021-2024' },
-  { name:'Opel Astra',   engine:'1.6 Hybrid 180cv PHEV',         fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Opel Crossland',engine:'1.2 Turbo 110cv',              fuel:'Gasolina', years:'2020-2024' },
-  { name:'Opel Grandland',engine:'1.2 Turbo 130cv',              fuel:'Gasolina', years:'2022-2024' },
-  { name:'Opel Grandland',engine:'1.6 Hybrid4 300cv PHEV',       fuel:'Híbrido',  years:'2020-2024' },
-
-  // ── FORD ──
-  { name:'Ford Puma',   engine:'1.0 EcoBoost 125cv MHEV',        fuel:'Híbrido',  years:'2019-2024' },
-  { name:'Ford Puma',   engine:'1.0 EcoBoost 155cv MHEV',        fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Ford Fiesta', engine:'1.0 EcoBoost 95cv',              fuel:'Gasolina', years:'2017-2023' },
-  { name:'Ford Fiesta', engine:'1.0 EcoBoost 125cv',             fuel:'Gasolina', years:'2017-2023' },
-  { name:'Ford Focus',  engine:'1.0 EcoBoost 125cv',             fuel:'Gasolina', years:'2018-2024' },
-  { name:'Ford Focus',  engine:'1.5 EcoBlue 120cv',              fuel:'Diésel',   years:'2018-2024' },
-  { name:'Ford Kuga',   engine:'2.5 Duratec PHEV 225cv',         fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Ford Explorer',engine:'3.0 EcoBoost PHEV 457cv',       fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Ford Mustang Mach-E', engine:'Motor eléctrico 269cv',  fuel:'Eléctrico',years:'2021-2024' },
-
-  // ── SKODA ──
-  { name:'Skoda Octavia',  engine:'1.5 TSI 150cv',               fuel:'Gasolina', years:'2020-2024' },
-  { name:'Skoda Octavia',  engine:'2.0 TDI 150cv',               fuel:'Diésel',   years:'2020-2024' },
-  { name:'Skoda Octavia',  engine:'1.4 iV eHybrid 245cv PHEV',   fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Skoda Octavia Combi', engine:'2.0 TDI 150cv',          fuel:'Diésel',   years:'2020-2024' },
-  { name:'Skoda Fabia',    engine:'1.0 TSI 95cv',                fuel:'Gasolina', years:'2021-2024' },
-  { name:'Skoda Fabia',    engine:'1.0 TSI 110cv',               fuel:'Gasolina', years:'2021-2024' },
-  { name:'Skoda Kamiq',    engine:'1.0 TSI 115cv',               fuel:'Gasolina', years:'2019-2024' },
-  { name:'Skoda Karoq',    engine:'1.5 TSI 150cv',               fuel:'Gasolina', years:'2021-2024' },
-  { name:'Skoda Karoq',    engine:'2.0 TDI 150cv',               fuel:'Diésel',   years:'2017-2024' },
-  { name:'Skoda Kodiaq',   engine:'2.0 TDI 150cv',               fuel:'Diésel',   years:'2017-2024' },
-  { name:'Skoda Enyaq',    engine:'Motor eléctrico 204cv 77kWh', fuel:'Eléctrico',years:'2021-2024' },
-
-  // ── CUPRA ──
-  { name:'Cupra Formentor', engine:'1.5 TSI 150cv',              fuel:'Gasolina', years:'2020-2024' },
-  { name:'Cupra Formentor', engine:'2.0 TSI 310cv 4Drive',       fuel:'Gasolina', years:'2020-2024' },
-  { name:'Cupra Formentor', engine:'1.4 eHybrid 245cv PHEV',     fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Cupra Born',      engine:'Motor eléctrico 231cv 77kWh',fuel:'Eléctrico',years:'2021-2024' },
-  { name:'Cupra Born',      engine:'Motor eléctrico 170cv 58kWh',fuel:'Eléctrico',years:'2021-2024' },
-  { name:'Cupra León',      engine:'1.5 eTSI 150cv MHEV',        fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Cupra León',      engine:'2.0 TSI 300cv',              fuel:'Gasolina', years:'2020-2024' },
-  { name:'Cupra Ateca',     engine:'2.0 TSI 300cv 4Drive',       fuel:'Gasolina', years:'2018-2024' },
-  { name:'Cupra Tavascan',  engine:'Motor eléctrico 340cv AWD',  fuel:'Eléctrico',years:'2024-2024' },
-
-  // ── BMW ──
-  { name:'BMW Serie 1', engine:'118i 136cv',                     fuel:'Gasolina', years:'2019-2024' },
-  { name:'BMW Serie 1', engine:'120i 170cv',                     fuel:'Gasolina', years:'2019-2024' },
-  { name:'BMW Serie 1', engine:'120d 150cv',                     fuel:'Diésel',   years:'2019-2023' },
-  { name:'BMW Serie 3', engine:'320i 184cv',                     fuel:'Gasolina', years:'2018-2024' },
-  { name:'BMW Serie 3', engine:'330e 292cv PHEV',                fuel:'Híbrido',  years:'2019-2024' },
-  { name:'BMW Serie 3', engine:'320d 190cv',                     fuel:'Diésel',   years:'2018-2024' },
-  { name:'BMW X1',      engine:'sDrive18i 136cv',                fuel:'Gasolina', years:'2022-2024' },
-  { name:'BMW X1',      engine:'xDrive25e 245cv PHEV',           fuel:'Híbrido',  years:'2022-2024' },
-  { name:'BMW iX1',     engine:'Motor eléctrico 313cv AWD',      fuel:'Eléctrico',years:'2022-2024' },
-  { name:'BMW X3',      engine:'xDrive20i 184cv',                fuel:'Gasolina', years:'2021-2024' },
-  { name:'BMW X3',      engine:'xDrive20d 190cv',                fuel:'Diésel',   years:'2021-2024' },
-
-  // ── MERCEDES-BENZ ──
-  { name:'Mercedes Clase A', engine:'A180 136cv',                fuel:'Gasolina', years:'2018-2024' },
-  { name:'Mercedes Clase A', engine:'A200 163cv',                fuel:'Gasolina', years:'2018-2024' },
-  { name:'Mercedes Clase A', engine:'A180d 116cv',               fuel:'Diésel',   years:'2018-2024' },
-  { name:'Mercedes Clase C', engine:'C200 204cv MHEV',           fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Mercedes Clase C', engine:'C220d 200cv',               fuel:'Diésel',   years:'2021-2024' },
-  { name:'Mercedes Clase C', engine:'C300e 313cv PHEV',          fuel:'Híbrido',  years:'2021-2024' },
-  { name:'Mercedes GLA',     engine:'GLA 200 163cv',             fuel:'Gasolina', years:'2020-2024' },
-  { name:'Mercedes GLA',     engine:'GLA 250e 218cv PHEV',       fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Mercedes EQA',     engine:'Motor eléctrico 190cv',     fuel:'Eléctrico',years:'2021-2024' },
-  { name:'Mercedes EQB',     engine:'Motor eléctrico 228cv AWD', fuel:'Eléctrico',years:'2021-2024' },
-
-  // ── AUDI ──
-  { name:'Audi A3',  engine:'1.5 TFSI 150cv',                    fuel:'Gasolina', years:'2020-2024' },
-  { name:'Audi A3',  engine:'1.5 TFSI e 204cv PHEV',             fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Audi A3',  engine:'2.0 TDI 150cv',                     fuel:'Diésel',   years:'2020-2024' },
-  { name:'Audi A3 Sportback', engine:'1.5 TFSI 150cv',           fuel:'Gasolina', years:'2020-2024' },
-  { name:'Audi Q3',  engine:'1.5 TFSI 150cv',                    fuel:'Gasolina', years:'2019-2024' },
-  { name:'Audi Q3',  engine:'2.0 TDI 150cv',                     fuel:'Diésel',   years:'2019-2024' },
-  { name:'Audi Q5',  engine:'2.0 TFSI 265cv MHEV',               fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Audi Q5',  engine:'55 TFSIe 367cv PHEV',               fuel:'Híbrido',  years:'2020-2024' },
-  { name:'Audi e-tron', engine:'Motor eléctrico 408cv AWD',       fuel:'Eléctrico',years:'2019-2024' },
-  { name:'Audi Q4 e-tron', engine:'Motor eléctrico 204cv 77kWh', fuel:'Eléctrico',years:'2021-2024' },
-
-  // ── MAZDA ──
-  { name:'Mazda CX-5', engine:'2.0 Skyactiv-G 165cv',            fuel:'Gasolina', years:'2017-2024' },
-  { name:'Mazda CX-5', engine:'2.5 Skyactiv-G 194cv AWD',        fuel:'Gasolina', years:'2017-2024' },
-  { name:'Mazda CX-5', engine:'2.0 Skyactiv-G e-Skyactiv 165cv', fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Mazda CX-30', engine:'2.0 Skyactiv-G 122cv',           fuel:'Gasolina', years:'2019-2024' },
-  { name:'Mazda CX-30', engine:'2.0 e-Skyactiv-X 186cv',         fuel:'Gasolina', years:'2019-2024' },
-  { name:'Mazda 3',     engine:'2.0 e-Skyactiv-X 186cv',         fuel:'Gasolina', years:'2019-2024' },
-  { name:'Mazda MX-5',  engine:'2.0 Skyactiv-G 184cv',           fuel:'Gasolina', years:'2015-2024' },
-  { name:'Mazda MX-5',  engine:'1.5 Skyactiv-G 132cv',           fuel:'Gasolina', years:'2015-2024' },
-  { name:'Mazda CX-60', engine:'3.3 e-Skyactiv-D 254cv MHEV',    fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Mazda CX-60', engine:'2.5 e-Skyactiv PHEV 327cv',      fuel:'Híbrido',  years:'2022-2024' },
-
-  // ── TESLA ──
-  { name:'Tesla Model 3', engine:'Motor eléctrico 283cv RWD',    fuel:'Eléctrico',years:'2019-2024' },
-  { name:'Tesla Model 3', engine:'Motor eléctrico 490cv AWD',    fuel:'Eléctrico',years:'2019-2024' },
-  { name:'Tesla Model Y', engine:'Motor eléctrico 283cv RWD',    fuel:'Eléctrico',years:'2021-2024' },
-  { name:'Tesla Model Y', engine:'Motor eléctrico 450cv AWD',    fuel:'Eléctrico',years:'2021-2024' },
-
-  // ── CITROËN ──
-  { name:'Citroën C3',       engine:'1.2 PureTech 83cv',         fuel:'Gasolina', years:'2020-2024' },
-  { name:'Citroën C3',       engine:'1.2 PureTech 110cv',        fuel:'Gasolina', years:'2020-2024' },
-  { name:'ë-C3',             engine:'Motor eléctrico 113cv',      fuel:'Eléctrico',years:'2024-2024' },
-  { name:'Citroën C3 Aircross', engine:'1.2 PureTech 110cv',     fuel:'Gasolina', years:'2024-2024' },
-  { name:'Citroën C5 X',     engine:'1.6 PureTech 180cv',        fuel:'Gasolina', years:'2022-2024' },
-  { name:'Citroën C5 X',     engine:'1.6 Hybrid 225cv PHEV',     fuel:'Híbrido',  years:'2022-2024' },
-  { name:'Citroën Berlingo', engine:'1.2 PureTech 110cv',        fuel:'Gasolina', years:'2018-2024' },
-];
-
-// Carga cars.json externo y lo fusiona con la base local
-fetch('cars.json')
-  .then(r => { if (!r.ok) throw new Error('no cars.json'); return r.json(); })
-  .then(data => { CAR_DB = data; })
-  .catch(() => {}); // si falla usa la base local vacía (o lo que haya)
-
-// ── SUPABASE CONFIG ───────────────────────────────────────
-const SUPABASE_URL = 'https://dykhvfhilnobtnnpsnwj.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_z89049Kogf6_xm6Jtr_CaQ_egV_K88-';
-
-async function submitSuggestion() {
-  const name   = document.getElementById('sName').value.trim();
-  const engine = document.getElementById('sEngine').value.trim();
-  const fuel   = document.getElementById('sFuel').value;
-  const years  = document.getElementById('sYears').value.trim();
-
-  if (!name)   { toast('Indica el modelo del coche.', true); return; }
-  if (!engine) { toast('Indica el motor.', true); return; }
-  if (!fuel)   { toast('Indica el combustible.', true); return; }
-
-  const btn = document.getElementById('submitSuggestionBtn');
-  btn.disabled = true;
-  btn.textContent = 'Enviando...';
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/Sugerencias`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ name, engine, fuel, years: years || '2020-2024', estado: 'pendiente' })
-    });
-
-    if (res.ok) {
-      closeModal('suggestModal');
-      toast('¡Sugerencia enviada! La revisaremos pronto.');
-      ['sName','sEngine','sYears'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('sFuel').value = '';
-    } else {
-      throw new Error('Error ' + res.status);
-    }
-  } catch(e) {
-    toast('Error al enviar. Inténtalo de nuevo.', true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Enviar sugerencia';
-  }
-}
-
-function suggestModel() {
-  // Pre-rellena con lo que haya en el modal de coche
-  const name   = document.getElementById('cName').value.trim();
-  const engine = document.getElementById('cEngine').value.trim();
-  const fuel   = document.getElementById('cFuel').value;
-  const year   = document.getElementById('cYear').value;
-
-  if (name)   document.getElementById('sName').value   = name;
-  if (engine) document.getElementById('sEngine').value = engine;
-  if (fuel)   document.getElementById('sFuel').value   = fuel;
-  if (year)   document.getElementById('sYears').value  = year + '-' + year;
-
-  openModal('suggestModal');
-}
-
-
-function searchCarModels(query) {
-  if (!query || query.length < 2) return [];
-  const q = query.toLowerCase();
-  return CAR_DB.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8);
-}
-
-function onModelInput(val) {
-  const results = searchCarModels(val);
-  const box = document.getElementById('modelSuggestions');
-  document.getElementById('autofillBadge').classList.remove('visible');
-
-  if (!results.length) { box.style.display = 'none'; return; }
-
-  box.innerHTML = results.map((c, i) => `
-    <div class="model-suggestion-item" onmousedown="selectModel(${i}, '${val}')">
-      <div class="model-suggestion-name">${c.name}</div>
-      <div class="model-suggestion-meta">${c.engine} · ${c.fuel} · ${c.years}</div>
-    </div>`).join('');
-
-  // Store results for selection
-  box._results = results;
-  box.style.display = 'block';
-}
-
-function selectModel(idx, query) {
-  const box = document.getElementById('modelSuggestions');
-  const results = searchCarModels(query) || box._results;
-  const car = results[idx];
-  if (!car) return;
-
-  document.getElementById('cName').value   = car.name;
-  document.getElementById('cEngine').value = car.engine;
-  document.getElementById('cFuel').value   = car.fuel;
-  box.style.display = 'none';
-  document.getElementById('autofillBadge').classList.add('visible');
-}
-
-function hideModelSuggestions() {
-  const box = document.getElementById('modelSuggestions');
-  if (box) box.style.display = 'none';
-}
-
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-
-function closeSidebar() {
-  document.querySelector('.sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-}
-
-// Close sidebar on nav item click (mobile)
-document.querySelectorAll('.nav-item').forEach(el => {
-  el.addEventListener('click', () => { if (window.innerWidth <= 640) closeSidebar(); });
-});
-
 // ── DEFAULT INTERVALS ──────────────────────────────────────
 const DEF_INT = {
   'filtro de aire':15000,'filtro de habitáculo':15000,'filtro de aceite':10000,
@@ -1742,11 +1283,12 @@ function showPage(page) {
     piezas: 'Buscar piezas',
     datos: 'Importar / Exportar'
   };
-  document.getElementById('pageTitle').textContent = titles[page];
+  document.getElementById('pageTitle').textContent = titles[page] || page;
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'historial') renderHistorial();
-  if (page === 'piezas') renderPiezasPage();
+  if (page === 'piezas')    renderPiezasPage();
+  if (page === 'nueva')     renderInterventionGrid();
 }
 
 // ── SIDEBAR ───────────────────────────────────────────────
@@ -1793,8 +1335,6 @@ function openAddCarModal() {
   document.getElementById('carModalTitle').textContent = 'Añadir coche';
   ['cName','cPlate','cYear','cEngine'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('cFuel').value = '';
-  document.getElementById('autofillBadge').classList.remove('visible');
-  hideModelSuggestions();
   setColor('#5b8af0');
   openModal('carModal');
 }
@@ -1809,8 +1349,6 @@ function openEditCarModal() {
   document.getElementById('cYear').value   = car.year  || '';
   document.getElementById('cEngine').value = car.engine|| '';
   document.getElementById('cFuel').value   = car.fuel  || '';
-  document.getElementById('autofillBadge').classList.remove('visible');
-  hideModelSuggestions();
   setColor(car.color || '#5b8af0');
   openModal('carModal');
 }
@@ -1917,8 +1455,11 @@ function addRecord() {
 function clearForm() {
   ['fName','fKm','fInterval','fCost','fNotes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
-  document.getElementById('infoCard').style.display = 'none';
-  document.getElementById('affiliateBar').classList.remove('visible');
+  const infoCard = document.getElementById('infoCard');
+  if (infoCard) infoCard.style.display = 'none';
+  const affBar = document.getElementById('affiliateBar');
+  if (affBar) affBar.classList.remove('visible');
+  renderInterventionGrid();
 }
 
 function deleteRecord(id) {
@@ -2147,8 +1688,7 @@ function renderHistorial() {
     return;
   }
 
-  tbody.innerHTML = filtered.map(r => {
-    return `
+  tbody.innerHTML = filtered.map(r => `
     <tr>
       <td style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);white-space:nowrap">${r.date}</td>
       <td><span class="badge-type">${r.name}</span></td>
@@ -2158,7 +1698,8 @@ function renderHistorial() {
       <td style="color:var(--muted)">${r.cost!=null?r.cost.toFixed(2)+' €':'—'}</td>
       <td style="color:var(--muted);font-size:0.78rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.notes||'—'}</td>
       <td><button class="icon-btn" onclick="deleteRecord('${r.id}')">🗑</button></td>
-    </tr>`}).join('');
+    </tr>
+  `).join('');
 }
 
 // ── IMPORT / EXPORT ───────────────────────────────────────
@@ -2246,261 +1787,200 @@ function isoToDisplay(iso) {
   return `${d}/${m}/${y}`;
 }
 
-// ── AFFILIATE CONFIG ───────────────────────────────────────
-// Sustituye estos valores por tus códigos reales cuando los tengas
-const AMAZON_TAG   = 'TU_TAG_AMAZON-21';    // ej: garagelog-21
-const AUTODOC_LANG = 'es';                   // idioma Autodoc
+// ── INTERVENTION CATEGORIES ───────────────────────────────
+const INTERVENTIONS = [
+  { name:'Aceite motor',             icon:'🛢️', cat:'motor' },
+  { name:'Filtro de aceite',         icon:'🛢️', cat:'motor' },
+  { name:'Bujías',                   icon:'⚡',  cat:'motor' },
+  { name:'Correa de distribución',   icon:'⚙️',  cat:'motor' },
+  { name:'Cadena de distribución',   icon:'⚙️',  cat:'motor' },
+  { name:'Bomba de agua',            icon:'💦',  cat:'motor' },
+  { name:'Termostato',               icon:'🌡️', cat:'motor' },
+  { name:'Junta de culata',          icon:'🔧',  cat:'motor' },
+  { name:'Bobinas de encendido',     icon:'⚡',  cat:'motor' },
+  { name:'Cables de bujías',         icon:'⚡',  cat:'motor' },
+  { name:'Sensor MAF',               icon:'🔧',  cat:'motor' },
+  { name:'Válvula EGR',              icon:'🔧',  cat:'motor' },
+  { name:'Pastillas de freno',       icon:'🛑',  cat:'frenos' },
+  { name:'Discos de freno',          icon:'⭕',  cat:'frenos' },
+  { name:'Líquido de frenos',        icon:'💧',  cat:'frenos' },
+  { name:'Freno de mano',            icon:'🅿️',  cat:'frenos' },
+  { name:'Latiguillos de freno',     icon:'🔧',  cat:'frenos' },
+  { name:'Pinzas de freno',          icon:'🔧',  cat:'frenos' },
+  { name:'Filtro de aire',           icon:'💨',  cat:'filtros' },
+  { name:'Filtro de habitáculo',     icon:'🌬️', cat:'filtros' },
+  { name:'Filtro de combustible',    icon:'⛽',  cat:'filtros' },
+  { name:'Filtro de partículas DPF', icon:'🔧',  cat:'filtros' },
+  { name:'Amortiguadores',           icon:'🔩',  cat:'suspension' },
+  { name:'Muelles',                  icon:'🔩',  cat:'suspension' },
+  { name:'Rótulas de dirección',     icon:'🔩',  cat:'suspension' },
+  { name:'Silent blocks',            icon:'🔩',  cat:'suspension' },
+  { name:'Barra estabilizadora',     icon:'🔩',  cat:'suspension' },
+  { name:'Dirección asistida',       icon:'🎡',  cat:'suspension' },
+  { name:'Alineación y equilibrado', icon:'⚖️',  cat:'suspension' },
+  { name:'Brazos de suspensión',     icon:'🔩',  cat:'suspension' },
+  { name:'Batería',                  icon:'🔋',  cat:'electricidad' },
+  { name:'Alternador',               icon:'⚡',  cat:'electricidad' },
+  { name:'Motor de arranque',        icon:'⚡',  cat:'electricidad' },
+  { name:'Luces delanteras',         icon:'💡',  cat:'electricidad' },
+  { name:'Luces traseras',           icon:'💡',  cat:'electricidad' },
+  { name:'Luces antiniebla',         icon:'💡',  cat:'electricidad' },
+  { name:'Fusibles',                 icon:'🔌',  cat:'electricidad' },
+  { name:'Sensor de aparcamiento',   icon:'📡',  cat:'electricidad' },
+  { name:'Cámara trasera',           icon:'📷',  cat:'electricidad' },
+  { name:'Neumáticos',               icon:'🔄',  cat:'ruedas' },
+  { name:'Equilibrado ruedas',       icon:'⚖️',  cat:'ruedas' },
+  { name:'Rotación neumáticos',      icon:'🔄',  cat:'ruedas' },
+  { name:'Llantas',                  icon:'🔄',  cat:'ruedas' },
+  { name:'Válvulas TPMS',            icon:'📡',  cat:'ruedas' },
+  { name:'Volante',                  icon:'🎡',  cat:'estetica' },
+  { name:'Pomo de cambios',          icon:'🕹️', cat:'estetica' },
+  { name:'Tapicería',                icon:'🪑',  cat:'estetica' },
+  { name:'Vinilo / Wrapping',        icon:'🎨',  cat:'estetica' },
+  { name:'Escobillas limpiaparabrisas', icon:'🌧️', cat:'estetica' },
+  { name:'Alfombrillas',             icon:'🪑',  cat:'estetica' },
+  { name:'Retrovisor',               icon:'🪞',  cat:'estetica' },
+  { name:'Refrigerante',             icon:'🌡️', cat:'fluidos' },
+  { name:'Líquido dirección',        icon:'💧',  cat:'fluidos' },
+  { name:'Líquido limpiaparabrisas', icon:'💧',  cat:'fluidos' },
+  { name:'Aceite caja cambios',      icon:'⚙️',  cat:'fluidos' },
+  { name:'Aceite diferencial',       icon:'⚙️',  cat:'fluidos' },
+  { name:'Revisión general',         icon:'🔍',  cat:'revision' },
+  { name:'ITV',                      icon:'📋',  cat:'revision' },
+  { name:'Diagnosis electrónica',    icon:'💻',  cat:'revision' },
+  { name:'Revisión frenos',          icon:'🛑',  cat:'revision' },
+  { name:'Revisión luces',           icon:'💡',  cat:'revision' },
+];
 
-// Términos de búsqueda Amazon por intervención
-const AMAZON_TERMS = {
-  'filtro de aire':              'filtro aire',
-  'filtro de habitáculo':        'filtro habitáculo polen',
-  'filtro de aceite':            'filtro aceite',
-  'aceite motor':                'aceite motor',
-  'pastillas de freno':          'pastillas freno',
-  'discos de freno':             'discos freno',
-  'bujías':                      'bujías',
-  'correa de distribución':      'kit distribución',
-  'filtro de combustible':       'filtro combustible',
-  'líquido de frenos':           'líquido frenos dot',
-  'refrigerante':                'refrigerante anticongelante',
-  'amortiguadores':              'amortiguadores',
-  'neumáticos':                  'neumáticos',
-  'batería':                     'batería coche',
-  'escobillas limpiaparabrisas': 'escobillas limpiaparabrisas',
-  'volante':                     'volante deportivo coche',
-  'pomo de cambios':             'pomo cambios coche',
-};
+let currentCat = 'todas';
 
-// Rutas Autodoc por intervención
-const AUTODOC_PATHS = {
-  'filtro de aire':              'filtro-de-aire-10360',
-  'filtro de habitáculo':        'filtro-de-aire-de-habitaculo-10363',
-  'filtro de aceite':            'filtro-de-aceite-10369',
-  'aceite motor':                'aceite-de-motor-10902',
-  'pastillas de freno':          'juego-de-pastillas-de-freno-10286',
-  'discos de freno':             'disco-de-freno-10282',
-  'bujías':                      'bujia-10102',
-  'correa de distribución':      'correa-dentada-10097',
-  'filtro de combustible':       'filtro-de-combustible-10366',
-  'líquido de frenos':           'liquido-de-frenos-10944',
-  'refrigerante':                'anticongelante-10941',
-  'amortiguadores':              'amortiguador-10268',
-  'neumáticos':                  'neumatico-10953',
-  'batería':                     'bateria-de-arranque-10516',
-  'escobillas limpiaparabrisas': 'escobilla-limpiaparabrisas-10152',
-};
-
-function buildAmazonUrl(intervention, carName) {
-  const l = intervention.toLowerCase();
-  let term = intervention;
-  for (const [k, v] of Object.entries(AMAZON_TERMS)) {
-    if (l.includes(k)) { term = v; break; }
-  }
-  const query = encodeURIComponent((carName ? carName + ' ' : '') + term);
-  return `https://www.amazon.es/s?k=${query}&tag=${AMAZON_TAG}`;
+function filterCatTab(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderInterventionGrid();
 }
 
-function buildAutodocUrl(intervention, carName) {
-  const l = intervention.toLowerCase();
-  let path = null;
-  for (const [k, v] of Object.entries(AUTODOC_PATHS)) {
-    if (l.includes(k)) { path = v; break; }
-  }
-  // Extraer solo la marca (primera palabra del nombre del coche)
-  const brand = carName ? carName.split(' ')[0].toLowerCase() : null;
-  if (path && brand) {
-    return `https://www.autodoc.es/repuestos/${path}/${brand}`;
-  } else if (path) {
-    return `https://www.autodoc.es/repuestos/${path}`;
-  }
-  // Fallback: búsqueda general
-  const query = encodeURIComponent((carName ? carName + ' ' : '') + intervention);
-  return `https://www.autodoc.es/search?search=${query}`;
+function renderInterventionGrid() {
+  const grid = document.getElementById('interventionGrid');
+  if (!grid) return;
+  const filtered = currentCat === 'todas' ? INTERVENTIONS : INTERVENTIONS.filter(i => i.cat === currentCat);
+  const current  = document.getElementById('fName').value;
+  grid.innerHTML  = filtered.map(i => `
+    <div class="intervention-chip ${current === i.name ? 'selected' : ''}" onclick="selectIntervention('${i.name.replace(/'/g,"\\'")}')">
+      <span class="chip-icon">${i.icon}</span>
+      <span>${i.name}</span>
+    </div>`).join('');
 }
 
-function updateAffiliateBar(intervention) {
-  const bar  = document.getElementById('affiliateBar');
-  const car  = getActiveCar();
-  const name = intervention.trim();
-
-  if (!name || name.length < 3) { bar.classList.remove('visible'); return; }
-
-  const carName = car ? car.name : '';
-  document.getElementById('btnAmazon').href  = buildAmazonUrl(name, carName);
-  document.getElementById('btnAutodoc').href = buildAutodocUrl(name, carName);
-  bar.classList.add('visible');
+function selectIntervention(name) {
+  document.getElementById('fName').value = name;
+  renderInterventionGrid();
+  onFNameInput(name);
 }
 
-// ── INFO DATABASE ──────────────────────────────────────────
-const INFO_DB = {
-  'filtro de aire': {
-    icon:'💨', interval:15000,
-    signals:['Aceleración perezosa','Consumo elevado','Humo negro por el escape','Motor que tira al acelerar'],
-    tips:['Revísalo cada vez que hagas el aceite','En zonas con polvo, cámbialo antes']
-  },
-  'filtro de habitáculo': {
-    icon:'🌬️', interval:15000,
-    signals:['Mal olor dentro del coche','Cristales que se empañan rápido','AC menos eficaz','Alergias dentro del coche'],
-    tips:['Suele estar detrás de la guantera, fácil de cambiar','Cámbialo antes del verano']
-  },
-  'filtro de aceite': {
-    icon:'🛢️', interval:10000,
-    signals:['Cámbialo siempre con el aceite','Presión de aceite baja','Ruido metálico en el motor'],
-    tips:['Nunca cambies el aceite sin cambiar el filtro']
-  },
-  'aceite motor': {
-    icon:'🛢️', interval:10000,
-    signals:['Nivel bajo en la varilla','Color oscuro o negro','Ruido metálico en arranque','Consumo de aceite elevado'],
-    tips:['Comprueba el nivel cada 3.000 km','Usa siempre la viscosidad recomendada']
-  },
-  'pastillas de freno': {
-    icon:'🛑', interval:30000,
-    signals:['Chirrido al frenar','Vibración en el pedal','Frena peor','Testigo de frenos encendido'],
-    tips:['Revisa los discos al cambiar las pastillas','Las traseras duran más que las delanteras']
-  },
-  'discos de freno': {
-    icon:'⭕', interval:60000,
-    signals:['Vibración al frenar','Ranuras visibles en el disco','Coche tira a un lado','Ruido metálico constante'],
-    tips:['Cámbialos siempre en pareja por eje','Haz frenadas progresivas tras el cambio']
-  },
-  'bujías': {
-    icon:'⚡', interval:30000,
-    signals:['Arranque difícil','Tirones al acelerar','Consumo elevado','Check engine encendido'],
-    tips:['Las de iridio duran hasta 60.000 km','Comprueba también los cables de alta tensión']
-  },
-  'correa de distribución': {
-    icon:'⚙️', interval:60000,
-    signals:['No esperes síntomas — si se rompe destruye el motor','Revisa también los años, no solo km'],
-    tips:['Máximo 5–6 años aunque no llegues a los km','Cambia también la bomba de agua a la vez']
-  },
-  'filtro de combustible': {
-    icon:'⛽', interval:30000,
-    signals:['Pérdida de potencia','Tirones a alta velocidad','Difícil de arrancar','Motor que se para'],
-    tips:['En diésel es más crítico que en gasolina']
-  },
-  'líquido de frenos': {
-    icon:'💧', interval:40000,
-    signals:['Pedal esponjoso o blando','Frena peor','Líquido oscuro en el depósito'],
-    tips:['Cámbialo cada 2 años mínimo independientemente de km']
-  },
-  'refrigerante': {
-    icon:'🌡️', interval:60000,
-    signals:['Motor se calienta','Testigo de temperatura encendido','Nivel bajo','Olor dulce bajo el capó'],
-    tips:['Nunca abras el tapón en caliente','Mezcla al 50% con agua destilada']
-  },
-  'amortiguadores': {
-    icon:'🔩', interval:80000,
-    signals:['El coche bota en badenes','Cabeceo al frenar','Desgaste irregular de neumáticos','Ruido clonc'],
-    tips:['Cámbialos siempre en pareja por eje','Aprovecha para revisar rótulas y silentblocks']
-  },
-  'neumáticos': {
-    icon:'🔄', interval:40000,
-    signals:['Dibujo bajo 1,6mm (mínimo legal)','Desgaste irregular','Vibraciones en autopista','Más de 5–6 años'],
-    tips:['Comprueba la presión mensualmente','Rota cada 10.000 km para desgaste uniforme']
-  },
-  'batería': {
-    icon:'🔋', interval:50000,
-    signals:['Arranque lento','Testigos al arrancar','Más de 4–5 años','Alternador que no carga'],
-    tips:['En invierno rinden peor','Con el coche parado usa un mantenedor de carga']
-  },
-  'escobillas limpiaparabrisas': {
-    icon:'🌧️', interval:20000,
-    signals:['Rayaduras en el cristal','Ruido al limpiar','Goma cuarteada','Vibración en marcha'],
-    tips:['Cámbialas antes del otoño','No olvides la escobilla trasera']
-  },
-  'volante': {
-    icon:'🎡', interval:null,
-    signals:['Modificación estética','Asegúrate de compatibilidad con el airbag'],
-    tips:['Necesitas un adaptador (moyeu) específico','Un diámetro menor da sensación más deportiva']
-  },
-  'pomo de cambios': {
-    icon:'🕹️', interval:null,
-    signals:['Modificación estética','Comprueba la rosca (M10, M12...)'],
-    tips:['Los pomos más pesados mejoran la sensación de cambio']
-  },
-  'revisión general': {
-    icon:'🔍', interval:20000,
-    signals:['Revisa niveles: aceite, refrigerante, frenos','Comprueba luces, escobillas y neumáticos'],
-    tips:['Hazla coincidiendo con el cambio de aceite']
-  },
-};
-
-function getInfo(name) {
-  const l = name.toLowerCase().trim();
-  for (const [k, v] of Object.entries(INFO_DB)) {
-    if (l.includes(k)) return { key:k, ...v };
-  }
-  return null;
-}
-
-function showInfoCard(name) {
-  const card = document.getElementById('infoCard');
-  const info = getInfo(name);
-  if (!info) { card.style.display = 'none'; return; }
-
-  document.getElementById('infoIcon').textContent = info.icon;
-  document.getElementById('infoName').textContent = name.charAt(0).toUpperCase() + name.slice(1);
-  document.getElementById('infoInterval').textContent = info.interval
-    ? '🔁 cada ' + info.interval.toLocaleString('es-ES') + ' km'
-    : '📐 sin intervalo fijo';
-
-  document.getElementById('infoBody').innerHTML = `
-    <div>
-      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Señales de que toca</div>
-      ${info.signals.map(s=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${s}</div>`).join('')}
-    </div>
-    <div>
-      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Consejos</div>
-      ${info.tips.map(t=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${t}</div>`).join('')}
-    </div>
-  `;
-  card.style.display = 'flex';
-}
-
-// Auto-fill interval + info card + affiliate bar
-document.getElementById('fName').addEventListener('input', function() {
-  const iv = guessInterval(this.value);
+function onFNameInput(val) {
+  const iv = guessInterval(val);
   document.getElementById('fInterval').value = iv || '';
-  showInfoCard(this.value);
-  updateAffiliateBar(this.value);
-});
+  showInfoCard(val);
+  updateAffiliateBar(val);
+  renderInterventionGrid();
+}
 
 // Auto-fill km
 document.getElementById('fKm').addEventListener('focus', function() {
   if (!this.value && getActiveCar()?.km) this.value = getActiveCar().km;
 });
 
+// ── CATEGORY HELPERS ──────────────────────────────────────
+function getCatForName(name) {
+  const l = name.toLowerCase();
+  return INTERVENTIONS.find(i => l.includes(i.name.toLowerCase()) || i.name.toLowerCase().includes(l)) || { icon:'🔧', cat:'otros' };
+}
+
+function getCatColor(cat) {
+  const c = { motor:'#f59e0b', frenos:'#f87171', filtros:'#60a5fa', suspension:'#a78bfa', electricidad:'#fbbf24', ruedas:'#34d399', estetica:'#f472b6', fluidos:'#22d3ee', revision:'#94a3b8', otros:'#6b6d84' };
+  return c[cat] || c.otros;
+}
+
+// ── HISTORIAL CARDS ───────────────────────────────────────
+function renderHistorial() {
+  const car       = getActiveCar();
+  const container = document.getElementById('historialBody');
+  if (!car || !car.records.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>Sin registros todavía.<br>Ve a "Nueva intervención" para añadir.</p></div>`;
+    return;
+  }
+
+  const q     = (document.getElementById('filterInput')?.value || '').toLowerCase();
+  const fcat  = document.getElementById('filterCat')?.value || '';
+  const curKm = car.km || 0;
+
+  const filtered = [...car.records]
+    .filter(r => {
+      if (q && !r.name.toLowerCase().includes(q) && !(r.notes||'').toLowerCase().includes(q)) return false;
+      if (fcat) {
+        const found = getCatForName(r.name);
+        if (found.cat !== fcat) return false;
+      }
+      return true;
+    })
+    .sort((a,b) => b.km - a.km);
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state"><p>Sin resultados para los filtros aplicados.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(r => {
+    const meta     = getCatForName(r.name);
+    const color    = getCatColor(meta.cat);
+    const nextKm   = r.km + r.interval;
+    const rem      = nextKm - curKm;
+    const pct      = rem / r.interval;
+    const urgColor = pct > 0.3 ? 'var(--green)' : pct > 0 ? 'var(--yellow)' : 'var(--red)';
+    const urgLabel = rem > 0 ? '+' + rem.toLocaleString('es-ES') + ' km' : 'VENCIDO';
+    const urgCls   = pct > 0.3 ? 'badge-ok' : pct > 0 ? 'badge-warn' : 'badge-danger';
+
+    return `
+    <div class="hist-card">
+      <div class="hist-card-accent" style="background:${color}"></div>
+      <div class="hist-card-icon">${meta.icon}</div>
+      <div class="hist-card-body">
+        <div class="hist-card-name">${r.name}</div>
+        <div class="hist-card-meta">
+          <span>📅 ${r.date}</span>
+          <span>🛣️ <span class="hi">${r.km.toLocaleString('es-ES')} km</span></span>
+          ${r.cost != null ? `<span class="co">💶 ${r.cost.toFixed(2)} €</span>` : ''}
+        </div>
+        ${r.notes ? `<div class="hist-card-notes">💬 ${r.notes}</div>` : ''}
+      </div>
+      <div class="hist-card-right">
+        <div class="hist-km-badge ${urgCls}" style="color:${urgColor};background:${urgColor}18;border:1px solid ${urgColor}44">${urgLabel}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted)">próx. ${nextKm.toLocaleString('es-ES')} km</div>
+        <button class="icon-btn" onclick="deleteRecord('${r.id}')" style="margin-top:0.25rem">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 // ── PIEZAS PAGE ───────────────────────────────────────────
-const QUICK_PIEZAS = [
-  'Filtro de aire', 'Filtro de habitáculo', 'Aceite motor',
-  'Pastillas de freno', 'Discos de freno', 'Bujías',
-  'Batería', 'Escobillas limpiaparabrisas', 'Amortiguadores',
-  'Correa de distribución', 'Refrigerante', 'Neumáticos'
-];
+const QUICK_PIEZAS = ['Filtro de aire','Filtro de habitáculo','Aceite motor','Pastillas de freno','Discos de freno','Bujías','Batería','Escobillas limpiaparabrisas','Amortiguadores','Correa de distribución','Refrigerante','Neumáticos'];
 
 function renderPiezasPage() {
   const car = getActiveCar();
-
-  // Info del coche activo
   const carInfo = document.getElementById('piezasCarInfo');
   if (car) {
-    carInfo.innerHTML = `<span style="color:var(--text);font-weight:500">${car.name}</span> ${car.engine ? '· '+car.engine : ''} ${car.fuel ? '· '+car.fuel : ''} <span style="color:var(--muted);font-size:0.78rem;margin-left:0.5rem">Las búsquedas se filtran para tu coche.</span>`;
-    carInfo.style.borderLeftColor = car.color;
+    carInfo.innerHTML = `<span style="color:var(--text);font-weight:500">${car.name}</span> ${car.engine?'· '+car.engine:''} ${car.fuel?'· '+car.fuel:''} <span style="color:var(--muted);font-size:0.78rem;margin-left:0.5rem">Las búsquedas se filtran para tu coche.</span>`;
     carInfo.style.borderLeft = '3px solid ' + car.color;
   } else {
     carInfo.innerHTML = 'Selecciona un coche en el sidebar para buscar piezas.';
+    carInfo.style.borderLeft = '';
   }
-
-  // Quick chips
   const quick = document.getElementById('quickPiezas');
   quick.innerHTML = QUICK_PIEZAS.map(p => `
-    <button onclick="selectPieza('${p}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.75rem;padding:4px 12px;cursor:pointer;transition:all 0.15s"
-      onmouseover="this.style.borderColor='var(--car-accent)';this.style.color='var(--text)'"
-      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">${p}</button>
+    <button onclick="selectPieza('${p}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.75rem;padding:4px 12px;cursor:pointer;transition:all 0.15s" onmouseover="this.style.borderColor='var(--car-accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">${p}</button>
   `).join('');
-
-  // Limpiar búsqueda
   document.getElementById('piezaSearch').value = '';
   document.getElementById('piezasResult').style.display = 'none';
   document.getElementById('piezasEmpty').style.display = 'block';
@@ -2514,56 +1994,27 @@ function selectPieza(name) {
 function onPiezaSearch(val) {
   const result = document.getElementById('piezasResult');
   const empty  = document.getElementById('piezasEmpty');
-
-  if (!val || val.length < 2) {
-    result.style.display = 'none';
-    empty.style.display = 'block';
-    return;
-  }
-
-  const car     = getActiveCar();
+  if (!val || val.length < 2) { result.style.display='none'; empty.style.display='block'; return; }
+  const car = getActiveCar();
   const carName = car ? car.name : '';
-  const info    = getInfo(val);
-
-  // Info card
+  const info = getInfo(val);
   if (info) {
     document.getElementById('piezasIcon').textContent     = info.icon;
     document.getElementById('piezasName').textContent     = val.charAt(0).toUpperCase() + val.slice(1);
-    document.getElementById('piezasInterval').textContent = info.interval
-      ? '🔁 cada ' + info.interval.toLocaleString('es-ES') + ' km'
-      : '📐 sin intervalo fijo';
+    document.getElementById('piezasInterval').textContent = info.interval ? '🔁 cada '+info.interval.toLocaleString('es-ES')+' km' : '📐 sin intervalo fijo';
   }
-
-  // Historial de esta pieza en el coche activo
   const histEl = document.getElementById('piezasHistory');
   if (car && car.records && car.records.length) {
     const l = val.toLowerCase();
-    const matches = car.records
-      .filter(r => r.name.toLowerCase().includes(l) || l.includes(r.name.toLowerCase()))
-      .sort((a,b) => b.km - a.km);
-
+    const matches = car.records.filter(r => r.name.toLowerCase().includes(l)||l.includes(r.name.toLowerCase())).sort((a,b)=>b.km-a.km);
     if (matches.length) {
-      const last = matches[0];
-      const curKm = car.km || 0;
-      const nextKm = last.km + last.interval;
-      const remaining = nextKm - curKm;
-      const color = remaining < 0 ? 'var(--red)' : remaining < last.interval * 0.3 ? 'var(--yellow)' : 'var(--green)';
-      histEl.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
-          <div>📅 Último cambio: <strong style="color:var(--text)">${last.date}</strong> a <strong style="color:var(--text)">${last.km.toLocaleString('es-ES')} km</strong></div>
-          <div style="color:${color};font-family:'DM Mono',monospace;font-size:0.8rem">${remaining > 0 ? '+'+remaining.toLocaleString('es-ES')+' km para el próximo' : 'VENCIDO — toca cambiarlo'}</div>
-        </div>`;
-    } else {
-      histEl.innerHTML = `<span style="color:var(--muted)">Sin registros de esta pieza en tu historial.</span>`;
-    }
-  } else {
-    histEl.innerHTML = `<span style="color:var(--muted)">Sin registros todavía.</span>`;
-  }
-
-  // URLs
+      const last = matches[0], curKm = car.km||0, rem = (last.km+last.interval)-curKm;
+      const color = rem<0?'var(--red)':rem<last.interval*0.3?'var(--yellow)':'var(--green)';
+      histEl.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem"><div>📅 Último cambio: <strong style="color:var(--text)">${last.date}</strong> a <strong style="color:var(--text)">${last.km.toLocaleString('es-ES')} km</strong></div><div style="color:${color};font-family:'DM Mono',monospace;font-size:0.8rem">${rem>0?'+'+rem.toLocaleString('es-ES')+' km para el próximo':'VENCIDO — toca cambiarlo'}</div></div>`;
+    } else { histEl.innerHTML = `<span style="color:var(--muted)">Sin registros de esta pieza en tu historial.</span>`; }
+  } else { histEl.innerHTML = `<span style="color:var(--muted)">Sin registros todavía.</span>`; }
   document.getElementById('piezaBtnAmazon').href  = buildAmazonUrl(val, carName);
   document.getElementById('piezaBtnAutodoc').href = buildAutodocUrl(val, carName);
-
   result.style.display = 'flex';
   empty.style.display  = 'none';
 }
@@ -2585,46 +2036,5 @@ if (!state.cars.length) {
   showPage('dashboard');
 }
 </script>
-
-<!-- MODAL: SUGERIR MODELO -->
-<div class="modal-overlay" id="suggestModal">
-  <div class="modal" style="max-width:440px">
-    <div class="modal-header">
-      <div class="modal-title">💡 Sugerir modelo</div>
-      <button class="modal-close" onclick="closeModal('suggestModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:0.82rem;color:var(--muted);line-height:1.6">¿Tu coche no está en la lista? Rellena los datos y lo añadiremos a la base de datos para todos los usuarios.</p>
-      <div class="field">
-        <label>Marca y modelo *</label>
-        <input type="text" id="sName" placeholder="Ej: Honda ZR-V">
-      </div>
-      <div class="field">
-        <label>Motor / Versión *</label>
-        <input type="text" id="sEngine" placeholder="Ej: 2.0 e:HEV 184cv">
-      </div>
-      <div class="field">
-        <label>Combustible *</label>
-        <select id="sFuel">
-          <option value="">—</option>
-          <option value="Gasolina">Gasolina</option>
-          <option value="Diésel">Diésel</option>
-          <option value="Híbrido">Híbrido</option>
-          <option value="Eléctrico">Eléctrico</option>
-          <option value="GLP">GLP</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Años de producción</label>
-        <input type="text" id="sYears" placeholder="Ej: 2022-2024">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal('suggestModal')">Cancelar</button>
-      <button class="btn-primary" id="submitSuggestionBtn" onclick="submitSuggestion()">Enviar sugerencia</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
