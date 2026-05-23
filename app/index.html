@@ -1107,8 +1107,8 @@ select option { background: var(--surface2); }
             <div id="piezasHistory" style="font-size:0.8rem;color:var(--muted);padding-top:0.75rem;border-top:1px solid var(--border);margin-top:0.5rem"></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
-            <a id="piezaBtnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon" style="justify-content:center;padding:0.85rem">Ver en Amazon</a>
-            <a id="piezaBtnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc" style="justify-content:center;padding:0.85rem">Ver en Autodoc</a>
+            <a id="piezaBtnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon" style="justify-content:center;padding:0.85rem;font-size:0.88rem;text-decoration:none !important;color:#000 !important">Ver en Amazon</a>
+            <a id="piezaBtnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc" style="justify-content:center;padding:0.85rem;font-size:0.88rem;text-decoration:none !important;color:#fff !important">Ver en Autodoc</a>
           </div>
         </div>
 
@@ -1699,37 +1699,105 @@ function renderChart() {
   });
 }
 
-// ── HISTORIAL ─────────────────────────────────────────────
-function renderHistorial() {
+// ── AFFILIATE & INFO CONFIG ────────────────────────────────
+const AMAZON_TAG = 'TU_TAG_AMAZON-21';
+
+const AMAZON_TERMS = {
+  'filtro de aire':'filtro aire','filtro de habitáculo':'filtro habitáculo polen',
+  'filtro de aceite':'filtro aceite','aceite motor':'aceite motor',
+  'pastillas de freno':'pastillas freno','discos de freno':'discos freno',
+  'bujías':'bujías','correa de distribución':'kit distribución',
+  'filtro de combustible':'filtro combustible','líquido de frenos':'líquido frenos dot',
+  'refrigerante':'refrigerante anticongelante','amortiguadores':'amortiguadores',
+  'neumáticos':'neumáticos','batería':'batería coche',
+  'escobillas limpiaparabrisas':'escobillas limpiaparabrisas',
+  'volante':'volante deportivo coche','pomo de cambios':'pomo cambios coche',
+};
+
+const AUTODOC_PATHS = {
+  'filtro de aire':'filtro-de-aire-10360','filtro de habitáculo':'filtro-de-aire-de-habitaculo-10363',
+  'filtro de aceite':'filtro-de-aceite-10369','aceite motor':'aceite-de-motor-10902',
+  'pastillas de freno':'juego-de-pastillas-de-freno-10286','discos de freno':'disco-de-freno-10282',
+  'bujías':'bujia-10102','correa de distribución':'correa-dentada-10097',
+  'filtro de combustible':'filtro-de-combustible-10366','líquido de frenos':'liquido-de-frenos-10944',
+  'refrigerante':'anticongelante-10941','amortiguadores':'amortiguador-10268',
+  'neumáticos':'neumatico-10953','batería':'bateria-de-arranque-10516',
+  'escobillas limpiaparabrisas':'escobilla-limpiaparabrisas-10152',
+};
+
+function buildAmazonUrl(intervention, carName) {
+  const l = intervention.toLowerCase();
+  let term = intervention;
+  for (const [k,v] of Object.entries(AMAZON_TERMS)) { if (l.includes(k)) { term=v; break; } }
+  return `https://www.amazon.es/s?k=${encodeURIComponent((carName?carName+' ':'')+term)}&tag=${AMAZON_TAG}`;
+}
+
+function buildAutodocUrl(intervention, carName) {
+  const l = intervention.toLowerCase();
+  let path = null;
+  for (const [k,v] of Object.entries(AUTODOC_PATHS)) { if (l.includes(k)) { path=v; break; } }
+  const brand = carName ? carName.split(' ')[0].toLowerCase() : null;
+  if (path && brand) return `https://www.autodoc.es/repuestos/${path}/${brand}`;
+  if (path) return `https://www.autodoc.es/repuestos/${path}`;
+  return `https://www.autodoc.es/search?search=${encodeURIComponent((carName?carName+' ':'')+intervention)}`;
+}
+
+function updateAffiliateBar(intervention) {
+  const bar = document.getElementById('affiliateBar');
   const car = getActiveCar();
-  const tbody = document.getElementById('historialBody');
-  if (!car || !car.records.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><p>Sin registros todavía.<br>Ve a "Nueva intervención" para añadir.</p></div></td></tr>`;
-    return;
-  }
+  const name = intervention.trim();
+  if (!name || name.length < 3) { bar.classList.remove('visible'); return; }
+  const carName = car ? car.name : '';
+  document.getElementById('btnAmazon').href  = buildAmazonUrl(name, carName);
+  document.getElementById('btnAutodoc').href = buildAutodocUrl(name, carName);
+  bar.classList.add('visible');
+}
 
-  const q = (document.getElementById('filterInput')?.value || '').toLowerCase();
-  const filtered = [...car.records]
-    .filter(r => !q || r.name.toLowerCase().includes(q) || (r.notes||'').toLowerCase().includes(q))
-    .sort((a,b) => b.km - a.km);
+// ── INFO DATABASE ──────────────────────────────────────────
+const INFO_DB = {
+  'filtro de aire':{ icon:'💨', interval:15000, signals:['Aceleración perezosa','Consumo elevado','Humo negro por el escape','Motor que tira al acelerar'], tips:['Revísalo cada vez que hagas el aceite','En zonas con polvo, cámbialo antes'] },
+  'filtro de habitáculo':{ icon:'🌬️', interval:15000, signals:['Mal olor dentro del coche','Cristales que se empañan rápido','AC menos eficaz','Alergias dentro del coche'], tips:['Suele estar detrás de la guantera, fácil de cambiar','Cámbialo antes del verano'] },
+  'filtro de aceite':{ icon:'🛢️', interval:10000, signals:['Cámbialo siempre con el aceite','Presión de aceite baja','Ruido metálico en el motor'], tips:['Nunca cambies el aceite sin cambiar el filtro'] },
+  'aceite motor':{ icon:'🛢️', interval:10000, signals:['Nivel bajo en la varilla','Color oscuro o negro','Ruido metálico en arranque','Consumo de aceite elevado'], tips:['Comprueba el nivel cada 3.000 km','Usa siempre la viscosidad recomendada'] },
+  'pastillas de freno':{ icon:'🛑', interval:30000, signals:['Chirrido al frenar','Vibración en el pedal','Frena peor','Testigo de frenos encendido'], tips:['Revisa los discos al cambiar las pastillas','Las traseras duran más que las delanteras'] },
+  'discos de freno':{ icon:'⭕', interval:60000, signals:['Vibración al frenar','Ranuras visibles en el disco','Coche tira a un lado','Ruido metálico constante'], tips:['Cámbialos siempre en pareja por eje','Haz frenadas progresivas tras el cambio'] },
+  'bujías':{ icon:'⚡', interval:30000, signals:['Arranque difícil','Tirones al acelerar','Consumo elevado','Check engine encendido'], tips:['Las de iridio duran hasta 60.000 km','Comprueba también los cables de alta tensión'] },
+  'correa de distribución':{ icon:'⚙️', interval:60000, signals:['No esperes síntomas — si se rompe destruye el motor','Revisa también los años, no solo km'], tips:['Máximo 5–6 años aunque no llegues a los km','Cambia también la bomba de agua a la vez'] },
+  'filtro de combustible':{ icon:'⛽', interval:30000, signals:['Pérdida de potencia','Tirones a alta velocidad','Difícil de arrancar','Motor que se para'], tips:['En diésel es más crítico que en gasolina'] },
+  'líquido de frenos':{ icon:'💧', interval:40000, signals:['Pedal esponjoso o blando','Frena peor','Líquido oscuro en el depósito'], tips:['Cámbialo cada 2 años mínimo independientemente de km'] },
+  'refrigerante':{ icon:'🌡️', interval:60000, signals:['Motor se calienta','Testigo de temperatura encendido','Nivel bajo','Olor dulce bajo el capó'], tips:['Nunca abras el tapón en caliente','Mezcla al 50% con agua destilada'] },
+  'amortiguadores':{ icon:'🔩', interval:80000, signals:['El coche bota en badenes','Cabeceo al frenar','Desgaste irregular de neumáticos','Ruido clonc'], tips:['Cámbialos siempre en pareja por eje','Aprovecha para revisar rótulas y silentblocks'] },
+  'neumáticos':{ icon:'🔄', interval:40000, signals:['Dibujo bajo 1,6mm (mínimo legal)','Desgaste irregular','Vibraciones en autopista','Más de 5–6 años'], tips:['Comprueba la presión mensualmente','Rota cada 10.000 km para desgaste uniforme'] },
+  'batería':{ icon:'🔋', interval:50000, signals:['Arranque lento','Testigos al arrancar','Más de 4–5 años','Alternador que no carga'], tips:['En invierno rinden peor','Con el coche parado usa un mantenedor de carga'] },
+  'escobillas limpiaparabrisas':{ icon:'🌧️', interval:20000, signals:['Rayaduras en el cristal','Ruido al limpiar','Goma cuarteada','Vibración en marcha'], tips:['Cámbialas antes del otoño','No olvides la escobilla trasera'] },
+  'volante':{ icon:'🎡', interval:null, signals:['Modificación estética','Asegúrate de compatibilidad con el airbag'], tips:['Necesitas un adaptador (moyeu) específico','Un diámetro menor da sensación más deportiva'] },
+  'pomo de cambios':{ icon:'🕹️', interval:null, signals:['Modificación estética','Comprueba la rosca (M10, M12...)'], tips:['Los pomos más pesados mejoran la sensación de cambio'] },
+  'revisión general':{ icon:'🔍', interval:20000, signals:['Revisa niveles: aceite, refrigerante, frenos','Comprueba luces, escobillas y neumáticos'], tips:['Hazla coincidiendo con el cambio de aceite'] },
+};
 
-  if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><p>Sin resultados para "${q}".</p></div></td></tr>`;
-    return;
-  }
+function getInfo(name) {
+  const l = name.toLowerCase().trim();
+  for (const [k,v] of Object.entries(INFO_DB)) { if (l.includes(k)) return { key:k, ...v }; }
+  return null;
+}
 
-  tbody.innerHTML = filtered.map(r => `
-    <tr>
-      <td style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);white-space:nowrap">${r.date}</td>
-      <td><span class="badge-type">${r.name}</span></td>
-      <td style="font-family:'DM Mono',monospace">${r.km.toLocaleString('es-ES')}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--car-accent)">${(r.km+r.interval).toLocaleString('es-ES')}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--muted);font-size:0.78rem">${r.interval.toLocaleString('es-ES')}</td>
-      <td style="color:var(--muted)">${r.cost!=null?r.cost.toFixed(2)+' €':'—'}</td>
-      <td style="color:var(--muted);font-size:0.78rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.notes||'—'}</td>
-      <td><button class="icon-btn" onclick="deleteRecord('${r.id}')">🗑</button></td>
-    </tr>
-  `).join('');
+function showInfoCard(name) {
+  const card = document.getElementById('infoCard');
+  const info = getInfo(name);
+  if (!info) { card.style.display='none'; return; }
+  document.getElementById('infoIcon').textContent = info.icon;
+  document.getElementById('infoName').textContent = name.charAt(0).toUpperCase()+name.slice(1);
+  document.getElementById('infoInterval').textContent = info.interval ? 'cada '+info.interval.toLocaleString('es-ES')+' km' : 'sin intervalo fijo';
+  document.getElementById('infoBody').innerHTML = `
+    <div>
+      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Señales de que toca</div>
+      ${info.signals.map(s=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${s}</div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Consejos</div>
+      ${info.tips.map(t=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${t}</div>`).join('')}
+    </div>`;
+  card.style.display = 'flex';
 }
 
 // ── IMPORT / EXPORT ───────────────────────────────────────
