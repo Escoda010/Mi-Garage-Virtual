@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0c10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Garage Log">
 <title>Garage Log</title>
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -36,7 +40,12 @@ body {
   overflow-x: hidden;
 }
 
-/* ── SIDEBAR ── */
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
 .sidebar {
   width: 240px;
   min-height: 100vh;
@@ -47,14 +56,13 @@ body {
   position: fixed;
   left: 0; top: 0; bottom: 0;
   z-index: 50;
-  transition: transform 0.3s;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 
 .sidebar-logo {
   padding: 1.5rem 1.25rem 1rem;
   border-bottom: 1px solid var(--border);
 }
-
 .sidebar-logo h1 {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
@@ -62,7 +70,6 @@ body {
   color: var(--text);
   letter-spacing: -0.5px;
 }
-
 .sidebar-logo span {
   font-size: 0.7rem;
   color: var(--muted);
@@ -90,27 +97,22 @@ body {
   font-size: 0.88rem;
   font-weight: 500;
   color: var(--muted);
-  transition: all 0.15s;
+  transition: all 0.18s;
   border: 1px solid transparent;
 }
-
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-
+.nav-item:hover { background: var(--surface2); color: var(--text); transform: translateX(3px); }
 .nav-item.active {
   background: var(--accent-glow);
   color: var(--accent);
   border-color: rgba(91,138,240,0.2);
 }
-
 .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
 
-/* CAR SELECTOR */
 .car-selector {
   padding: 1rem 0.75rem;
   border-top: 1px solid var(--border);
   margin-top: auto;
 }
-
 .car-selector-label {
   font-size: 0.6rem;
   font-family: 'DM Mono', monospace;
@@ -131,35 +133,12 @@ body {
   border: 1px solid transparent;
   margin-bottom: 3px;
 }
-
 .car-pill:hover { background: var(--surface2); }
-
-.car-pill.active {
-  background: var(--surface2);
-  border-color: var(--border);
-}
-
-.car-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
+.car-pill.active { background: var(--surface2); border-color: var(--border); }
+.car-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .car-pill-info { flex: 1; min-width: 0; }
-
-.car-pill-name {
-  font-size: 0.82rem;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.car-pill-plate {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--muted);
-}
+.car-pill-name { font-size: 0.82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.car-pill-plate { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); }
 
 .add-car-btn {
   width: 100%;
@@ -174,10 +153,35 @@ body {
   margin-top: 0.4rem;
   transition: all 0.15s;
 }
-
 .add-car-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── MAIN ── */
+/* SIDEBAR OVERLAY (mobile) */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 49;
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.open { display: block; }
+.sidebar.mobile-open { transform: translateX(0) !important; }
+
+/* HAMBURGER */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hamburger-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 .main {
   margin-left: 240px;
   flex: 1;
@@ -197,14 +201,12 @@ body {
   top: 0;
   z-index: 40;
 }
-
 .page-title {
   font-family: 'Syne', sans-serif;
   font-weight: 700;
   font-size: 1.3rem;
   letter-spacing: -0.5px;
 }
-
 .topbar-actions { display: flex; gap: 0.5rem; align-items: center; }
 
 .km-chip {
@@ -220,19 +222,17 @@ body {
   cursor: pointer;
   transition: border-color 0.15s;
 }
-
 .km-chip:hover { border-color: var(--accent); }
 .km-chip .dot { width:6px;height:6px;border-radius:50%;background:var(--green); }
 
 .content { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
 
-/* ── CARDS ── */
+/* STAT CARDS */
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
-
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -240,9 +240,13 @@ body {
   padding: 1.25rem;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, transform 0.2s;
+  animation: fadeInUp 0.45s ease both;
 }
-
+.stat-card:nth-child(1) { animation-delay: 0s; }
+.stat-card:nth-child(2) { animation-delay: 0.07s; }
+.stat-card:nth-child(3) { animation-delay: 0.14s; }
+.stat-card:nth-child(4) { animation-delay: 0.21s; }
 .stat-card::after {
   content: '';
   position: absolute;
@@ -251,50 +255,20 @@ body {
   background: var(--car-accent);
   opacity: 0.6;
 }
+.stat-card:hover { border-color: rgba(91,138,240,0.3); transform: translateY(-2px); }
+.stat-label { font-size: 0.72rem; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 0.5rem; }
+.stat-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.6rem; letter-spacing: -1px; line-height: 1; margin-bottom: 0.25rem; }
+.stat-sub { font-size: 0.75rem; color: var(--muted); }
+.stat-icon { position: absolute; top: 1.25rem; right: 1.25rem; font-size: 1.3rem; opacity: 0.3; }
 
-.stat-card:hover { border-color: rgba(91,138,240,0.3); }
-
-.stat-label {
-  font-size: 0.72rem;
-  font-family: 'DM Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
-}
-
-.stat-value {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 1.6rem;
-  letter-spacing: -1px;
-  line-height: 1;
-  margin-bottom: 0.25rem;
-}
-
-.stat-sub {
-  font-size: 0.75rem;
-  color: var(--muted);
-}
-
-.stat-icon {
-  position: absolute;
-  top: 1.25rem; right: 1.25rem;
-  font-size: 1.3rem;
-  opacity: 0.3;
-}
-
-/* ── TWO COL LAYOUT ── */
 .two-col { display: grid; grid-template-columns: 1fr 360px; gap: 1.25rem; }
 
-/* ── PANEL ── */
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
 }
-
 .panel-header {
   display: flex;
   align-items: center;
@@ -302,13 +276,7 @@ body {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--border);
 }
-
-.panel-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
+.panel-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
 .panel-action {
   background: none;
   border: 1px solid var(--border);
@@ -320,15 +288,11 @@ body {
   cursor: pointer;
   transition: all 0.15s;
 }
-
 .panel-action:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── CHART ── */
 .chart-wrap { padding: 1.25rem; height: 220px; position: relative; }
 
-/* ── UPCOMING ── */
 .upcoming-list { padding: 0.5rem 0; }
-
 .upcoming-item {
   display: flex;
   align-items: center;
@@ -337,122 +301,40 @@ body {
   border-bottom: 1px solid var(--border);
   transition: background 0.1s;
 }
-
 .upcoming-item:last-child { border-bottom: none; }
 .upcoming-item:hover { background: var(--surface2); }
-
-.urgency-bar {
-  width: 3px;
-  height: 32px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
+.urgency-bar { width: 3px; height: 32px; border-radius: 2px; flex-shrink: 0; }
+.urgency-bar.pulse { animation: pulseDanger 1.6s ease-in-out infinite; }
 .upcoming-info { flex: 1; min-width: 0; }
-
-.upcoming-name {
-  font-size: 0.85rem;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.upcoming-km {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.upcoming-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  padding: 3px 8px;
-  border-radius: 20px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
+.upcoming-name { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.upcoming-km { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.upcoming-badge { font-family: 'DM Mono', monospace; font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
 .badge-ok     { background: rgba(52,211,153,0.1); color: var(--green); }
 .badge-warn   { background: rgba(251,191,36,0.1);  color: var(--yellow); }
 .badge-danger { background: rgba(248,113,113,0.1); color: var(--red); }
 
-/* ── TABLE ── */
 .table-wrap { overflow-x: auto; }
-
 table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
-
-th {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  padding: 0.7rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-
-td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(42,43,56,0.6);
-  vertical-align: middle;
-}
-
+th { font-family: 'DM Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 0.7rem 1rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(42,43,56,0.6); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: rgba(255,255,255,0.02); }
-
-.badge-type {
-  background: var(--surface3);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-size: 0.68rem;
-  font-family: 'DM Mono', monospace;
-  padding: 2px 8px;
-  color: var(--text);
-}
-
-.icon-btn {
-  background: none;
-  border: 1px solid transparent;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  transition: all 0.15s;
-}
-
+.badge-type { background: var(--surface3); border: 1px solid var(--border); border-radius: 4px; font-size: 0.68rem; font-family: 'DM Mono', monospace; padding: 2px 8px; color: var(--text); }
+.icon-btn { background: none; border: 1px solid transparent; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; transition: all 0.15s; }
 .icon-btn:hover { border-color: var(--red); color: var(--red); }
 
-.empty-state {
-  padding: 3rem 2rem;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-.empty-state .empty-icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.4; }
+.empty-state { padding: 2.5rem 2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+.empty-state svg { opacity: 0.2; display: block; margin: 0 auto 0.75rem; }
+.empty-state strong { color: var(--text); opacity: 0.65; display: block; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem; }
 .empty-state p { line-height: 1.6; }
 
-/* ── FORM ── */
 .form-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
 .form-row  { display: grid; gap: 0.75rem; }
 .form-row.c2 { grid-template-columns: 1fr 1fr; }
 .form-row.c3 { grid-template-columns: 1fr 1fr 1fr; }
 .form-row.c4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-
 .field { display: flex; flex-direction: column; gap: 6px; }
-
-label {
-  font-size: 0.68rem;
-  font-family: 'DM Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-}
+label { font-size: 0.68rem; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
 
 input[type=text], input[type=number], input[type=date], select, textarea {
   background: var(--surface2);
@@ -467,12 +349,10 @@ input[type=text], input[type=number], input[type=date], select, textarea {
   transition: border-color 0.2s, box-shadow 0.2s;
   -webkit-appearance: none;
 }
-
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
-
 select option { background: var(--surface2); }
 
 .btn-primary {
@@ -486,11 +366,10 @@ select option { background: var(--surface2); }
   letter-spacing: 0.5px;
   padding: 0.65rem 1.5rem;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
+  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
 }
-
-.btn-primary:hover  { opacity: 0.9; }
-.btn-primary:active { transform: scale(0.98); }
+.btn-primary:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(91,138,240,0.35); }
+.btn-primary:active { transform: scale(0.98); box-shadow: none; }
 
 .btn-secondary {
   background: var(--surface2);
@@ -503,79 +382,21 @@ select option { background: var(--surface2); }
   cursor: pointer;
   transition: all 0.15s;
 }
-
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── CAR FICHA ── */
-.car-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.car-card-hero {
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 4rem;
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.car-card-hero img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  position: absolute;
-  inset: 0;
-}
-
-.car-photo-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
-  font-size: 0.8rem;
-  color: #fff;
-}
-
+.car-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.car-card-hero { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; cursor: pointer; overflow: hidden; }
+.car-card-hero img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.car-photo-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; font-size: 0.8rem; color: #fff; }
 .car-card-hero:hover .car-photo-overlay { opacity: 1; }
-
 .car-card-body { padding: 1.25rem; }
-
-.car-card-name {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 1.2rem;
-  margin-bottom: 0.25rem;
-}
-
-.car-card-plate {
-  display: inline-block;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.78rem;
-  background: var(--surface3);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 2px 10px;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-
+.car-card-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.25rem; }
+.car-card-plate { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.78rem; background: var(--surface3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 10px; color: var(--muted); margin-bottom: 1rem; }
 .car-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-
 .car-meta-item .meta-label { font-size: 0.65rem; color: var(--muted); font-family: 'DM Mono'; text-transform: uppercase; letter-spacing: 1px; }
 .car-meta-item .meta-value { font-size: 0.88rem; font-weight: 500; margin-top: 2px; }
-
 .car-card-actions { display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 
-/* ── MODAL ── */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -587,9 +408,7 @@ select option { background: var(--surface2); }
   justify-content: center;
   padding: 1rem;
 }
-
 .modal-overlay.open { display: flex; }
-
 .modal {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -600,82 +419,28 @@ select option { background: var(--surface2); }
   overflow-y: auto;
   animation: modalIn 0.2s ease;
 }
-
 @keyframes modalIn {
   from { opacity:0; transform:translateY(12px) scale(0.98); }
   to   { opacity:1; transform:translateY(0) scale(1); }
 }
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.modal-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 1.05rem;
-}
-
-.modal-close {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 4px 10px;
-  font-size: 1rem;
-  line-height: 1;
-  transition: all 0.15s;
-}
-
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+.modal-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; }
+.modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; padding: 4px 10px; font-size: 1rem; line-height: 1; transition: all 0.15s; }
 .modal-close:hover { color: var(--text); border-color: var(--text); }
-
 .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
 .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; justify-content: flex-end; }
 
-/* ── COLOR PICKER ── */
 .color-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-
-.color-opt {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.15s;
-}
-
+.color-opt { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.15s; }
 .color-opt:hover   { transform: scale(1.15); }
 .color-opt.selected { border-color: #fff; transform: scale(1.1); }
 
-/* ── TABS ── */
-.tab-bar {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  padding: 0 1.25rem;
-}
-
-.tab {
-  padding: 0.75rem 1rem;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--muted);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-
+.tab-bar { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 1.25rem; }
+.tab { padding: 0.75rem 1rem; font-size: 0.82rem; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; white-space: nowrap; }
 .tab:hover  { color: var(--text); }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* ── IMPORT/EXPORT ── */
 .io-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1.25rem; }
-
 .io-card {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -685,13 +450,12 @@ select option { background: var(--surface2); }
   cursor: pointer;
   transition: all 0.2s;
 }
-
-.io-card:hover { border-color: var(--accent); }
+.io-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.3); }
+.io-card.disabled { opacity: 0.4; cursor: default; pointer-events: none; }
 .io-card .io-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
 .io-card h3 { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
 .io-card p  { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
 
-/* ── TOAST ── */
 .toast {
   position: fixed;
   bottom: 1.5rem; right: 1.5rem;
@@ -710,10 +474,8 @@ select option { background: var(--surface2); }
   pointer-events: none;
   box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
-
 .toast.show { opacity: 1; transform: translateY(0); }
 
-/* ── NO CAR STATE ── */
 .no-car {
   display: flex;
   flex-direction: column;
@@ -723,131 +485,54 @@ select option { background: var(--surface2); }
   padding: 4rem 2rem;
   text-align: center;
 }
-
-.no-car .big-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; }
+.no-car svg { opacity: 0.2; margin-bottom: 1.5rem; }
 .no-car h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
 .no-car p  { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; max-width: 320px; }
 
-@media(max-width:900px){
-  .stat-grid { grid-template-columns: 1fr 1fr; }
-  .two-col   { grid-template-columns: 1fr; }
+/* ANIMATIONS */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulseDanger {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
 }
 
-@media(max-width:640px){
-  .sidebar { transform: translateX(-100%); }
-  .main    { margin-left: 0; }
-}
-
-/* ── HISTORIAL CARDS ── */
-.historial-grid { display: flex; flex-direction: column; }
+.page-in { animation: fadeInUp 0.22s ease both; }
 
 .hist-card {
   display: flex;
   align-items: stretch;
   border-bottom: 1px solid var(--border);
   transition: background 0.12s;
+  animation: fadeInUp 0.35s ease both;
 }
 .hist-card:last-child { border-bottom: none; }
 .hist-card:hover { background: var(--surface2); }
-
 .hist-card-accent { width: 4px; flex-shrink: 0; }
-
-.hist-card-icon {
-  width: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-}
-
-.hist-card-body {
-  flex: 1;
-  padding: 0.85rem 0.75rem 0.85rem 0;
-  min-width: 0;
-}
-
-.hist-card-name {
-  font-weight: 400;
-  font-size: 0.88rem;
-  color: var(--text);
-  margin-bottom: 0.3rem;
-}
-
-.hist-card-meta {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--muted);
-}
-
+.hist-card-icon { width: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+.hist-card-body { flex: 1; padding: 0.85rem 0.75rem 0.85rem 0; min-width: 0; }
+.hist-card-name { font-weight: 400; font-size: 0.88rem; color: var(--text); margin-bottom: 0.3rem; }
+.hist-card-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); }
 .hist-card-meta .hi { color: var(--car-accent); }
 .hist-card-meta .co { color: var(--green); }
+.hist-card-notes { margin-top: 0.3rem; font-size: 0.73rem; color: var(--muted); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 360px; }
+.hist-card-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; padding: 0.85rem 1rem; gap: 0.35rem; flex-shrink: 0; }
+.hist-km-badge { font-family: 'DM Mono', monospace; font-size: 0.68rem; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
 
-.hist-card-notes {
-  margin-top: 0.3rem;
-  font-size: 0.73rem;
-  color: var(--muted);
-  font-style: italic;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 360px;
-}
+.historial-grid { display: flex; flex-direction: column; }
 
-.hist-card-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0.85rem 1rem;
-  gap: 0.35rem;
-  flex-shrink: 0;
-}
-
-.hist-km-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.68rem;
-  padding: 3px 9px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-/* ── INTERVENTION CATEGORIES ── */
-.cat-tabs {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  padding: 0.9rem 1.25rem 0.6rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.cat-tab {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 12px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  color: var(--muted);
-  transition: all 0.15s;
-  white-space: nowrap;
-}
+.cat-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; padding: 0.9rem 1.25rem 0.6rem; border-bottom: 1px solid var(--border); }
+.cat-tab { display: flex; align-items: center; gap: 0.3rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; color: var(--muted); transition: all 0.15s; white-space: nowrap; }
 .cat-tab:hover  { border-color: var(--accent); color: var(--text); }
 .cat-tab.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
 
-.intervention-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-  gap: 0.5rem;
-  padding: 0.9rem 1.25rem;
-}
-
+.intervention-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 0.5rem; padding: 0.9rem 1.25rem; }
 .intervention-chip {
   display: flex;
   align-items: center;
@@ -866,7 +551,6 @@ select option { background: var(--surface2); }
 .intervention-chip.selected { border-color: var(--car-accent); background: rgba(91,138,240,0.08); color: var(--car-accent); }
 .intervention-chip .chip-icon { font-size: 1rem; flex-shrink: 0; }
 
-/* ── AFFILIATE ── */
 .affiliate-bar { display:none; flex-direction:column; gap:0.5rem; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:0.9rem 1rem; }
 .affiliate-bar.visible { display:flex; }
 .affiliate-bar-title { font-size:0.65rem; font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
@@ -882,22 +566,68 @@ select option { background: var(--surface2); }
   cursor: pointer;
   text-decoration: none !important;
   border: none;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, transform 0.15s;
 }
-.affiliate-btn:hover { opacity: 0.85; }
+.affiliate-btn:hover { opacity: 0.85; transform: translateY(-1px); }
 .affiliate-btn.amazon  { background: #FF9900; color: #000 !important; }
 .affiliate-btn.autodoc { background: #e53935; color: #fff !important; }
 .affiliate-btn:visited { color: inherit; }
 
+/* RESPONSIVE */
+@media(max-width:900px){
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .two-col   { grid-template-columns: 1fr; }
+}
+
 @media(max-width:640px){
+  .sidebar { transform: translateX(-100%); }
+  .main    { margin-left: 0; }
+  .hamburger-btn { display: flex; align-items: center; }
+  .topbar { padding: 0.85rem 1rem; }
+  .content { padding: 1rem; gap: 1rem; }
+  .stat-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .form-row.c3 { grid-template-columns: 1fr 1fr; }
+  .form-row.c4 { grid-template-columns: 1fr 1fr; }
+  .io-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 1rem; }
+  .page-title { font-size: 1.05rem; }
+  .km-chip { font-size: 0.72rem; padding: 0.3rem 0.6rem; }
   .hist-card-right { display: none; }
+  .hist-card-notes { max-width: 200px; }
   .intervention-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .modal { border-radius: 16px; margin: 0; max-height: 95vh; }
+  .two-col { grid-template-columns: 1fr; }
+  .cat-tabs { padding: 0.7rem 1rem 0.5rem; }
+  .form-body { padding: 1rem; }
+}
+
+@media(max-width:380px){
+  .stat-grid { grid-template-columns: 1fr; }
+  .form-row.c2 { grid-template-columns: 1fr; }
+  .form-row.c3 { grid-template-columns: 1fr; }
+  .io-grid { grid-template-columns: 1fr; }
+}
+
+/* PRINT */
+@media print {
+  .sidebar, .sidebar-overlay, .topbar, .hamburger-btn,
+  .cat-tabs, .intervention-grid, .form-body,
+  .panel-action, .btn-primary, .btn-secondary, .icon-btn, .km-chip,
+  #page-nueva, #page-piezas, #page-datos, #catChartPanel, #carFichaPanel { display: none !important; }
+  .main { margin-left: 0 !important; }
+  body { background: white !important; }
+  .content { padding: 0.5rem !important; gap: 0.75rem !important; animation: none !important; }
+  .stat-card, .panel { background: white !important; border-color: #ddd !important; box-shadow: none !important; animation: none !important; transform: none !important; }
+  .stat-label, .stat-sub, .upcoming-km { color: #666 !important; }
+  .stat-value, .hist-card-name, .upcoming-name, .panel-title { color: black !important; }
+  .hist-card { animation: none !important; background: white !important; border-color: #ddd !important; }
+  .badge-ok, .badge-warn, .badge-danger, .hist-km-badge { background: #eee !important; color: #333 !important; border-color: #ccc !important; }
+  .hist-card-right { display: flex !important; }
+  .urgency-bar { animation: none !important; }
 }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <h1>🔧 Garage Log</h1>
@@ -928,13 +658,14 @@ select option { background: var(--surface2); }
   </div>
 </aside>
 
-<!-- MAIN -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <div class="main">
 
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="page-title" id="pageTitle">Dashboard</div>
     <div class="topbar-actions">
+      <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
       <div class="km-chip" onclick="openKmModal()" id="kmChip">
         <div class="dot"></div>
         <span id="kmChipText">— km</span>
@@ -942,9 +673,17 @@ select option { background: var(--surface2); }
     </div>
   </div>
 
-  <!-- NO CAR -->
   <div id="noCarState" class="no-car" style="display:none">
-    <div class="big-icon">🚗</div>
+    <svg width="140" height="90" viewBox="0 0 140 90" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="10" y="35" width="120" height="38" rx="8"/>
+      <path d="M28 35 L42 16 L98 16 L112 35"/>
+      <rect x="45" y="19" width="50" height="14" rx="3"/>
+      <circle cx="32" cy="73" r="9"/>
+      <circle cx="108" cy="73" r="9"/>
+      <line x1="41" y1="73" x2="99" y2="73"/>
+      <rect x="12" y="50" width="20" height="12" rx="3"/>
+      <rect x="108" y="50" width="20" height="12" rx="3"/>
+    </svg>
     <h2>Añade tu primer coche</h2>
     <p>Empieza añadiendo tu coche para llevar el control de su mantenimiento.</p>
     <button class="btn-primary" onclick="openAddCarModal()">Añadir coche</button>
@@ -952,9 +691,7 @@ select option { background: var(--surface2); }
 
   <!-- DASHBOARD -->
   <div id="page-dashboard" class="content" style="display:none">
-
     <div class="stat-grid" id="statGrid"></div>
-
     <div class="two-col">
       <div class="panel">
         <div class="panel-header">
@@ -965,17 +702,16 @@ select option { background: var(--surface2); }
         </div>
         <div class="chart-wrap"><canvas id="spendChart"></canvas></div>
       </div>
-
       <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Próximos mantenimientos</div>
-        </div>
+        <div class="panel-header"><div class="panel-title">Próximos mantenimientos</div></div>
         <div class="upcoming-list" id="upcomingList"></div>
       </div>
     </div>
-
+    <div class="panel" id="catChartPanel" style="display:none">
+      <div class="panel-header"><div class="panel-title">Gasto por categoría</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="catChart"></canvas></div>
+    </div>
     <div class="panel" id="carFichaPanel"></div>
-
   </div>
 
   <!-- HISTORIAL -->
@@ -983,8 +719,8 @@ select option { background: var(--surface2); }
     <div class="panel">
       <div class="panel-header">
         <div class="panel-title">Historial de intervenciones</div>
-        <div style="display:flex;gap:0.5rem;align-items:center">
-          <input type="text" id="filterInput" placeholder="Buscar..." style="width:160px;font-size:0.8rem;padding:0.35rem 0.75rem;border-radius:6px" oninput="renderHistorial()">
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          <input type="text" id="filterInput" placeholder="Buscar..." style="width:150px;font-size:0.8rem;padding:0.35rem 0.75rem;border-radius:6px" oninput="renderHistorial()">
           <select id="filterCat" onchange="renderHistorial()" style="font-size:0.78rem;padding:0.35rem 0.6rem;border-radius:6px;width:auto">
             <option value="">Todas las categorías</option>
             <option value="motor">Motor</option>
@@ -994,6 +730,8 @@ select option { background: var(--surface2); }
             <option value="electricidad">Electricidad</option>
             <option value="ruedas">Ruedas</option>
             <option value="estetica">Estética</option>
+            <option value="fluidos">Fluidos</option>
+            <option value="revision">Revisión</option>
           </select>
         </div>
       </div>
@@ -1004,11 +742,7 @@ select option { background: var(--surface2); }
   <!-- NUEVA INTERVENCIÓN -->
   <div id="page-nueva" class="content" style="display:none">
     <div class="panel" style="max-width:720px">
-      <div class="panel-header">
-        <div class="panel-title">Nueva intervención</div>
-      </div>
-
-      <!-- FORMULARIO ARRIBA -->
+      <div class="panel-header"><div class="panel-title">Nueva intervención</div></div>
       <div class="form-body" style="border-bottom:1px solid var(--border)">
         <div class="form-row c2">
           <div class="field">
@@ -1020,7 +754,6 @@ select option { background: var(--surface2); }
             <input type="date" id="fDate">
           </div>
         </div>
-
         <div class="info-card" id="infoCard" style="display:none;flex-direction:column;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--car-accent);border-radius:10px;padding:1rem 1.1rem">
           <div style="display:flex;align-items:center;gap:0.5rem">
             <span id="infoIcon" style="font-size:1.1rem"></span>
@@ -1029,7 +762,6 @@ select option { background: var(--surface2); }
           </div>
           <div id="infoBody" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem"></div>
         </div>
-
         <div class="affiliate-bar" id="affiliateBar">
           <div class="affiliate-bar-title">Buscar esta pieza para tu coche</div>
           <div class="affiliate-btns">
@@ -1037,7 +769,6 @@ select option { background: var(--surface2); }
             <a id="btnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc">Ver en Autodoc</a>
           </div>
         </div>
-
         <div class="form-row c3">
           <div class="field">
             <label>Km realizados *</label>
@@ -1061,9 +792,7 @@ select option { background: var(--surface2); }
           <button class="btn-secondary" onclick="clearForm()">Limpiar</button>
         </div>
       </div>
-
-      <!-- CATEGORÍAS ABAJO -->
-      <div class="cat-tabs">
+      <div class="cat-tabs" id="nuevaCatTabs">
         <div class="cat-tab active" onclick="filterCatTab('todas',this)">Todas</div>
         <div class="cat-tab" onclick="filterCatTab('motor',this)">Motor</div>
         <div class="cat-tab" onclick="filterCatTab('frenos',this)">Frenos</div>
@@ -1075,9 +804,7 @@ select option { background: var(--surface2); }
         <div class="cat-tab" onclick="filterCatTab('fluidos',this)">Fluidos</div>
         <div class="cat-tab" onclick="filterCatTab('revision',this)">Revisión</div>
       </div>
-
       <div class="intervention-grid" id="interventionGrid"></div>
-
     </div>
   </div>
 
@@ -1085,18 +812,14 @@ select option { background: var(--surface2); }
   <div id="page-piezas" class="content" style="display:none">
     <div class="panel" style="max-width:720px">
       <div class="panel-header"><div class="panel-title">Buscar piezas para tu coche</div></div>
-
-      <!-- INFO COCHE + BUSCADOR -->
       <div class="form-body" style="border-bottom:1px solid var(--border)">
         <div id="piezasCarInfo" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;font-size:0.85rem;color:var(--muted)">
           Selecciona un coche en el sidebar para buscar piezas.
         </div>
         <div class="field">
           <label>¿Qué pieza necesitas?</label>
-          <input type="text" id="piezaSearch" placeholder="O selecciona abajo..." autocomplete="off" oninput="onPiezaSearch(this.value)">
+          <input type="text" id="piezaSearch" placeholder="Escribe o selecciona abajo..." autocomplete="off" oninput="onPiezaSearch(this.value)">
         </div>
-
-        <!-- RESULTADO -->
         <div id="piezasResult" style="display:none;flex-direction:column;gap:1rem">
           <div id="piezasInfoCard" style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--car-accent);border-radius:10px;padding:1rem 1.1rem">
             <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
@@ -1107,17 +830,14 @@ select option { background: var(--surface2); }
             <div id="piezasHistory" style="font-size:0.8rem;color:var(--muted);padding-top:0.75rem;border-top:1px solid var(--border);margin-top:0.5rem"></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
-            <a id="piezaBtnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon" style="justify-content:center;padding:0.85rem">Ver en Amazon</a>
-            <a id="piezaBtnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc" style="justify-content:center;padding:0.85rem">Ver en Autodoc</a>
+            <a id="piezaBtnAmazon" href="#" target="_blank" rel="noopener" class="affiliate-btn amazon" style="justify-content:center;padding:0.85rem;font-size:0.88rem;text-decoration:none !important;color:#000 !important">Ver en Amazon</a>
+            <a id="piezaBtnAutodoc" href="#" target="_blank" rel="noopener" class="affiliate-btn autodoc" style="justify-content:center;padding:0.85rem;font-size:0.88rem;text-decoration:none !important;color:#fff !important">Ver en Autodoc</a>
           </div>
         </div>
-
         <div id="piezasEmpty" style="text-align:center;padding:1.5rem 0;color:var(--muted);font-size:0.85rem">
-          <p>Selecciona una categoría y una pieza, o escribe arriba.</p>
+          <p>Selecciona una categoría o escribe arriba para buscar.</p>
         </div>
       </div>
-
-      <!-- CATEGORÍAS -->
       <div class="cat-tabs">
         <div class="cat-tab active" onclick="filterPiezasCat('todas',this)">Todas</div>
         <div class="cat-tab" onclick="filterPiezasCat('motor',this)">Motor</div>
@@ -1130,9 +850,7 @@ select option { background: var(--surface2); }
         <div class="cat-tab" onclick="filterPiezasCat('fluidos',this)">Fluidos</div>
         <div class="cat-tab" onclick="filterPiezasCat('revision',this)">Revisión</div>
       </div>
-
       <div class="intervention-grid" id="piezasGrid"></div>
-
     </div>
   </div>
 
@@ -1156,10 +874,15 @@ select option { background: var(--surface2); }
           <h3>Importar JSON</h3>
           <p>Restaura una copia de seguridad anterior. Reemplaza los datos actuales.</p>
         </div>
-        <div class="io-card" style="opacity:0.4;cursor:default">
-          <div class="io-icon">🔄</div>
-          <h3>Sync (próximamente)</h3>
-          <p>Sincronización entre dispositivos.</p>
+        <div class="io-card" onclick="window.print()">
+          <div class="io-icon">🖨️</div>
+          <h3>Imprimir / PDF</h3>
+          <p>Imprime el historial o guárdalo como PDF desde el navegador.</p>
+        </div>
+      </div>
+      <div style="padding:0 1.25rem 1.25rem">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:0.85rem 1rem;font-size:0.8rem;color:var(--muted);line-height:1.6">
+          <strong style="color:var(--text)">💡 Instalar como app</strong> — Abre este sitio en Chrome/Safari y usa "Añadir a pantalla de inicio" para instalarla como app nativa en tu móvil.
         </div>
       </div>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
@@ -1251,7 +974,7 @@ select option { background: var(--surface2); }
 <div class="toast" id="toast"></div>
 
 <script>
-// ── DEFAULT INTERVALS ──────────────────────────────────────
+// ── INTERVALS ──────────────────────────────────────────────
 const DEF_INT = {
   'filtro de aire':15000,'filtro de habitáculo':15000,'filtro de aceite':10000,
   'aceite motor':10000,'pastillas de freno':30000,'discos de freno':60000,
@@ -1266,24 +989,18 @@ function guessInterval(name) {
   return 20000;
 }
 
-// ── STATE ─────────────────────────────────────────────────
+// ── STATE ──────────────────────────────────────────────────
 let state = { cars: [], activeCar: null };
 let chartInstance = null;
+let catChartInstance = null;
 let editingCar = null;
 let selectedColor = '#5b8af0';
 
 function load() {
-  try {
-    const s = localStorage.getItem('garageLogV3');
-    if (s) state = JSON.parse(s);
-  } catch(e) {}
+  try { const s = localStorage.getItem('garageLogV3'); if (s) state = JSON.parse(s); } catch(e) {}
 }
-
 function save() { localStorage.setItem('garageLogV3', JSON.stringify(state)); }
-
-function getActiveCar() {
-  return state.cars.find(c => c.id === state.activeCar) || null;
-}
+function getActiveCar() { return state.cars.find(c => c.id === state.activeCar) || null; }
 
 function setActiveCar(id) {
   state.activeCar = id;
@@ -1295,33 +1012,44 @@ function setActiveCar(id) {
   updateKmChip();
 }
 
-// ── PAGES ─────────────────────────────────────────────────
+// ── MOBILE SIDEBAR ─────────────────────────────────────────
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('mobile-open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+// ── PAGES ──────────────────────────────────────────────────
 const pages = ['dashboard','historial','nueva','piezas','datos'];
 
 function showPage(page) {
   pages.forEach(p => {
-    document.getElementById('page-'+p).style.display = 'none';
+    const el = document.getElementById('page-'+p);
+    el.style.display = 'none';
+    el.classList.remove('page-in');
     document.getElementById('nav-'+p).classList.remove('active');
   });
-  document.getElementById('page-'+page).style.display = 'flex';
+
+  const pageEl = document.getElementById('page-'+page);
+  pageEl.style.display = 'flex';
+  void pageEl.offsetWidth;
+  pageEl.classList.add('page-in');
   document.getElementById('nav-'+page).classList.add('active');
 
-  const titles = {
-    dashboard: 'Dashboard',
-    historial: 'Historial',
-    nueva: 'Nueva intervención',
-    piezas: 'Buscar piezas',
-    datos: 'Importar / Exportar'
-  };
+  const titles = { dashboard:'Dashboard', historial:'Historial', nueva:'Nueva intervención', piezas:'Buscar piezas', datos:'Importar / Exportar' };
   document.getElementById('pageTitle').textContent = titles[page] || page;
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'historial') renderHistorial();
   if (page === 'piezas')    renderPiezasPage();
   if (page === 'nueva')     renderInterventionGrid();
+
+  if (window.innerWidth <= 640) {
+    document.querySelector('.sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
 }
 
-// ── SIDEBAR ───────────────────────────────────────────────
+// ── SIDEBAR ────────────────────────────────────────────────
 function renderSidebar() {
   const list = document.getElementById('carList');
   list.innerHTML = state.cars.map(car => `
@@ -1331,16 +1059,13 @@ function renderSidebar() {
         <div class="car-pill-name">${car.name}</div>
         <div class="car-pill-plate">${car.plate||'Sin matrícula'}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ── KM ────────────────────────────────────────────────────
+// ── KM ─────────────────────────────────────────────────────
 function updateKmChip() {
   const car = getActiveCar();
-  document.getElementById('kmChipText').textContent = car && car.km
-    ? car.km.toLocaleString('es-ES') + ' km'
-    : '— km';
+  document.getElementById('kmChipText').textContent = car && car.km ? car.km.toLocaleString('es-ES') + ' km' : '— km';
 }
 
 function openKmModal() {
@@ -1359,7 +1084,7 @@ function saveKm() {
   }
 }
 
-// ── CAR MODAL ─────────────────────────────────────────────
+// ── CAR MODAL ──────────────────────────────────────────────
 function openAddCarModal() {
   editingCar = null;
   document.getElementById('carModalTitle').textContent = 'Añadir coche';
@@ -1374,25 +1099,21 @@ function openEditCarModal() {
   if (!car) return;
   editingCar = car.id;
   document.getElementById('carModalTitle').textContent = 'Editar coche';
-  document.getElementById('cName').value   = car.name  || '';
-  document.getElementById('cPlate').value  = car.plate || '';
-  document.getElementById('cYear').value   = car.year  || '';
-  document.getElementById('cEngine').value = car.engine|| '';
-  document.getElementById('cFuel').value   = car.fuel  || '';
+  document.getElementById('cName').value   = car.name   || '';
+  document.getElementById('cPlate').value  = car.plate  || '';
+  document.getElementById('cYear').value   = car.year   || '';
+  document.getElementById('cEngine').value = car.engine || '';
+  document.getElementById('cFuel').value   = car.fuel   || '';
   setColor(car.color || '#5b8af0');
   openModal('carModal');
 }
 
 function setColor(c) {
   selectedColor = c;
-  document.querySelectorAll('.color-opt').forEach(el => {
-    el.classList.toggle('selected', el.dataset.color === c);
-  });
+  document.querySelectorAll('.color-opt').forEach(el => el.classList.toggle('selected', el.dataset.color === c));
 }
 
-document.querySelectorAll('.color-opt').forEach(el => {
-  el.addEventListener('click', () => setColor(el.dataset.color));
-});
+document.querySelectorAll('.color-opt').forEach(el => el.addEventListener('click', () => setColor(el.dataset.color)));
 
 function saveCar() {
   const name = document.getElementById('cName').value.trim();
@@ -1421,7 +1142,6 @@ function saveCar() {
     state.activeCar = car.id;
     document.documentElement.style.setProperty('--car-accent', selectedColor);
   }
-
   save(); renderSidebar(); renderAll(); updateKmChip();
   closeModal('carModal');
   toast(editingCar ? 'Coche actualizado.' : 'Coche añadido.');
@@ -1437,7 +1157,7 @@ function deleteCar() {
   toast('Coche eliminado.');
 }
 
-// ── CAR PHOTO ─────────────────────────────────────────────
+// ── PHOTO ──────────────────────────────────────────────────
 function triggerPhotoUpload() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = 'image/*';
@@ -1457,7 +1177,7 @@ function triggerPhotoUpload() {
   input.click();
 }
 
-// ── RECORD ────────────────────────────────────────────────
+// ── RECORD ─────────────────────────────────────────────────
 function addRecord() {
   if (!getActiveCar()) { toast('Selecciona un coche primero.', true); return; }
   const name = document.getElementById('fName').value.trim();
@@ -1500,7 +1220,7 @@ function deleteRecord(id) {
   toast('Registro eliminado.');
 }
 
-// ── RENDER ALL ────────────────────────────────────────────
+// ── RENDER ALL ─────────────────────────────────────────────
 function renderAll() {
   const car = getActiveCar();
   const noCarEl = document.getElementById('noCarState');
@@ -1513,8 +1233,6 @@ function renderAll() {
   }
 
   noCarEl.style.display = 'none';
-
-  // show active page
   const activeNav = document.querySelector('.nav-item.active');
   if (activeNav) {
     const pid = activeNav.id.replace('nav-','');
@@ -1527,16 +1245,28 @@ function renderAll() {
   renderHistorial();
 }
 
-// ── DASHBOARD ─────────────────────────────────────────────
+// ── ANIMATE NUMBER ─────────────────────────────────────────
+function animateNumber(el, target, suffix = '') {
+  if (!el || !target) return;
+  const duration = 650;
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(target * ease).toLocaleString('es-ES') + suffix;
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────
 function renderDashboard() {
   const car = getActiveCar();
   if (!car) return;
 
-  const records = car.records || [];
+  const records  = car.records || [];
   const totalCost = records.reduce((s,r) => s + (r.cost||0), 0);
-  const curKm = car.km || 0;
-
-  // Stats
+  const curKm    = car.km || 0;
   const upcoming = getUpcoming(car);
   const nextUrgent = upcoming[0];
 
@@ -1544,32 +1274,42 @@ function renderDashboard() {
     <div class="stat-card">
       <div class="stat-icon">🛣️</div>
       <div class="stat-label">Km actuales</div>
-      <div class="stat-value">${curKm ? curKm.toLocaleString('es-ES') : '—'}</div>
+      <div class="stat-value" id="sv-km">${curKm ? curKm.toLocaleString('es-ES') : '—'}</div>
       <div class="stat-sub">Actualiza pulsando el chip</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">💶</div>
       <div class="stat-label">Total gastado</div>
-      <div class="stat-value">${totalCost.toFixed(0)}€</div>
+      <div class="stat-value" id="sv-cost">${totalCost.toFixed(0)}€</div>
       <div class="stat-sub">en ${records.length} intervenciones</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">⚙️</div>
       <div class="stat-label">Intervenciones</div>
-      <div class="stat-value">${records.length}</div>
+      <div class="stat-value" id="sv-count">${records.length}</div>
       <div class="stat-sub">${records.length > 0 ? 'Último: ' + records[records.length-1].name : 'Sin registros'}</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">⚠️</div>
       <div class="stat-label">Próximo urgente</div>
-      <div class="stat-value" style="font-size:1.1rem;color:${nextUrgent ? (nextUrgent.rem < 0 ? 'var(--red)' : nextUrgent.rem < nextUrgent.interval*0.3 ? 'var(--yellow)' : 'var(--green)') : 'var(--muted)'}">${nextUrgent ? (nextUrgent.rem > 0 ? '+'+nextUrgent.rem.toLocaleString('es-ES')+' km' : 'VENCIDO') : '—'}</div>
+      <div class="stat-value" id="sv-next" style="font-size:1.1rem;color:${nextUrgent ? (nextUrgent.rem < 0 ? 'var(--red)' : nextUrgent.rem < nextUrgent.interval*0.3 ? 'var(--yellow)' : 'var(--green)') : 'var(--muted)'}">${nextUrgent ? (nextUrgent.rem > 0 ? '+'+nextUrgent.rem.toLocaleString('es-ES')+' km' : 'VENCIDO') : '—'}</div>
       <div class="stat-sub">${nextUrgent ? nextUrgent.name : 'Sin datos'}</div>
-    </div>
-  `;
+    </div>`;
+
+  if (curKm)         animateNumber(document.getElementById('sv-km'),    curKm,    ' km');
+  if (totalCost > 0) animateNumber(document.getElementById('sv-cost'),  Math.round(totalCost), '€');
+  if (records.length > 0) animateNumber(document.getElementById('sv-count'), records.length);
 
   renderChart();
   renderUpcoming(car);
   renderFicha(car);
+
+  const hasCosts = records.some(r => r.cost > 0);
+  const catPanel = document.getElementById('catChartPanel');
+  if (catPanel) {
+    catPanel.style.display = hasCosts ? '' : 'none';
+    if (hasCosts) setTimeout(() => renderCategoryChart(), 50);
+  }
 }
 
 function getUpcoming(car) {
@@ -1579,19 +1319,24 @@ function getUpcoming(car) {
     const k = r.name.toLowerCase();
     if (!latest[k] || r.km > latest[k].km) latest[k] = r;
   }
-  return Object.values(latest).map(r => ({
-    ...r, rem: (r.km + r.interval) - curKm
-  })).sort((a,b) => a.rem - b.rem);
+  return Object.values(latest).map(r => ({ ...r, rem: (r.km + r.interval) - curKm })).sort((a,b) => a.rem - b.rem);
 }
 
 function renderUpcoming(car) {
-  const list = document.getElementById('upcomingList');
+  const list  = document.getElementById('upcomingList');
   const items = getUpcoming(car);
   if (!items.length) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">✨</div><p>Añade registros para ver el estado de mantenimiento.</p></div>';
+    list.innerHTML = `
+      <div class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="28" cy="28" r="20"/>
+          <path d="M28 16 L28 28 L36 33"/>
+        </svg>
+        <strong>Todo al día</strong>
+        <p>Añade registros para ver el estado de mantenimiento.</p>
+      </div>`;
     return;
   }
-
   list.innerHTML = items.slice(0, 8).map(r => {
     const pct = r.rem / r.interval;
     const cls = pct > 0.3 ? 'ok' : pct > 0 ? 'warn' : 'danger';
@@ -1599,7 +1344,7 @@ function renderUpcoming(car) {
     const label = r.rem > 0 ? '+' + r.rem.toLocaleString('es-ES') + ' km' : 'VENCIDO';
     return `
       <div class="upcoming-item">
-        <div class="urgency-bar" style="background:${colors[cls]}"></div>
+        <div class="urgency-bar${cls === 'danger' ? ' pulse' : ''}" style="background:${colors[cls]}"></div>
         <div class="upcoming-info">
           <div class="upcoming-name">${r.name}</div>
           <div class="upcoming-km">Próximo: ${(r.km+r.interval).toLocaleString('es-ES')} km · Último a ${r.km.toLocaleString('es-ES')} km</div>
@@ -1634,11 +1379,10 @@ function renderFicha(car) {
           ${car.km     ? `<div class="car-meta-item"><div class="meta-label">Km actuales</div><div class="meta-value">${car.km.toLocaleString('es-ES')} km</div></div>` : ''}
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-// ── CHART ─────────────────────────────────────────────────
+// ── CHART: MONTHLY ─────────────────────────────────────────
 function renderChart() {
   const car = getActiveCar();
   if (!car) return;
@@ -1649,7 +1393,7 @@ function renderChart() {
 
   if (yearSel.options.length === 0 || yearSel.dataset.car !== car.id) {
     yearSel.innerHTML = '';
-    const yrs = allYears.length ? allYears : [currentYear];
+    const yrs = allYears.length ? [...allYears] : [currentYear];
     if (!yrs.includes(currentYear)) yrs.push(currentYear);
     yrs.sort().forEach(y => {
       const opt = document.createElement('option');
@@ -1660,9 +1404,9 @@ function renderChart() {
     yearSel.dataset.car = car.id;
   }
 
-  const year = yearSel.value || currentYear;
+  const year   = yearSel.value || currentYear;
   const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const data = Array(12).fill(0);
+  const data   = Array(12).fill(0);
 
   (car.records||[]).forEach(r => {
     if (!r.dateISO || !r.cost) return;
@@ -1699,40 +1443,152 @@ function renderChart() {
   });
 }
 
-// ── HISTORIAL ─────────────────────────────────────────────
-function renderHistorial() {
+// ── CHART: CATEGORY DONUT ──────────────────────────────────
+function renderCategoryChart() {
   const car = getActiveCar();
-  const tbody = document.getElementById('historialBody');
-  if (!car || !car.records.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><p>Sin registros todavía.<br>Ve a "Nueva intervención" para añadir.</p></div></td></tr>`;
-    return;
-  }
+  if (!car) return;
 
-  const q = (document.getElementById('filterInput')?.value || '').toLowerCase();
-  const filtered = [...car.records]
-    .filter(r => !q || r.name.toLowerCase().includes(q) || (r.notes||'').toLowerCase().includes(q))
-    .sort((a,b) => b.km - a.km);
+  const catTotals = {};
+  (car.records||[]).forEach(r => {
+    if (!r.cost) return;
+    const meta = getCatForName(r.name);
+    catTotals[meta.cat] = (catTotals[meta.cat] || 0) + r.cost;
+  });
 
-  if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><p>Sin resultados para "${q}".</p></div></td></tr>`;
-    return;
-  }
+  const sorted = Object.entries(catTotals).sort((a,b) => b[1]-a[1]);
+  if (!sorted.length) return;
 
-  tbody.innerHTML = filtered.map(r => `
-    <tr>
-      <td style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);white-space:nowrap">${r.date}</td>
-      <td><span class="badge-type">${r.name}</span></td>
-      <td style="font-family:'DM Mono',monospace">${r.km.toLocaleString('es-ES')}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--car-accent)">${(r.km+r.interval).toLocaleString('es-ES')}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--muted);font-size:0.78rem">${r.interval.toLocaleString('es-ES')}</td>
-      <td style="color:var(--muted)">${r.cost!=null?r.cost.toFixed(2)+' €':'—'}</td>
-      <td style="color:var(--muted);font-size:0.78rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.notes||'—'}</td>
-      <td><button class="icon-btn" onclick="deleteRecord('${r.id}')">🗑</button></td>
-    </tr>
-  `).join('');
+  const catNames = { motor:'Motor', frenos:'Frenos', filtros:'Filtros', suspension:'Suspensión', electricidad:'Electricidad', ruedas:'Ruedas', estetica:'Estética', fluidos:'Fluidos', revision:'Revisión', otros:'Otros' };
+  const labels = sorted.map(([k]) => catNames[k] || k);
+  const data   = sorted.map(([,v]) => parseFloat(v.toFixed(2)));
+  const colors = sorted.map(([k]) => getCatColor(k));
+
+  const ctx = document.getElementById('catChart')?.getContext('2d');
+  if (!ctx) return;
+  if (catChartInstance) catChartInstance.destroy();
+
+  catChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#0b0c10', borderWidth: 3, hoverOffset: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: '#6b6d84', font: { family: 'DM Mono', size: 11 }, padding: 16, usePointStyle: true, pointStyleWidth: 8 }
+        },
+        tooltip: {
+          backgroundColor: '#1c1d26', borderColor: '#2a2b38', borderWidth: 1,
+          titleColor: '#6b6d84', bodyColor: '#e8e9f0',
+          callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.raw.toFixed(2) + ' €' }
+        }
+      }
+    }
+  });
 }
 
-// ── IMPORT / EXPORT ───────────────────────────────────────
+// ── AFFILIATE ──────────────────────────────────────────────
+const AMAZON_TAG = 'TU_TAG_AMAZON-21';
+
+const AMAZON_TERMS = {
+  'filtro de aire':'filtro aire','filtro de habitáculo':'filtro habitáculo polen',
+  'filtro de aceite':'filtro aceite','aceite motor':'aceite motor',
+  'pastillas de freno':'pastillas freno','discos de freno':'discos freno',
+  'bujías':'bujías','correa de distribución':'kit distribución',
+  'filtro de combustible':'filtro combustible','líquido de frenos':'líquido frenos dot',
+  'refrigerante':'refrigerante anticongelante','amortiguadores':'amortiguadores',
+  'neumáticos':'neumáticos','batería':'batería coche',
+  'escobillas limpiaparabrisas':'escobillas limpiaparabrisas',
+  'volante':'volante deportivo coche','pomo de cambios':'pomo cambios coche',
+};
+
+const AUTODOC_PATHS = {
+  'filtro de aire':'filtro-de-aire-10360','filtro de habitáculo':'filtro-de-aire-de-habitaculo-10363',
+  'filtro de aceite':'filtro-de-aceite-10369','aceite motor':'aceite-de-motor-10902',
+  'pastillas de freno':'juego-de-pastillas-de-freno-10286','discos de freno':'disco-de-freno-10282',
+  'bujías':'bujia-10102','correa de distribución':'correa-dentada-10097',
+  'filtro de combustible':'filtro-de-combustible-10366','líquido de frenos':'liquido-de-frenos-10944',
+  'refrigerante':'anticongelante-10941','amortiguadores':'amortiguador-10268',
+  'neumáticos':'neumatico-10953','batería':'bateria-de-arranque-10516',
+  'escobillas limpiaparabrisas':'escobilla-limpiaparabrisas-10152',
+};
+
+function buildAmazonUrl(intervention, carName) {
+  const l = intervention.toLowerCase();
+  let term = intervention;
+  for (const [k,v] of Object.entries(AMAZON_TERMS)) { if (l.includes(k)) { term=v; break; } }
+  return `https://www.amazon.es/s?k=${encodeURIComponent((carName?carName+' ':'')+term)}&tag=${AMAZON_TAG}`;
+}
+
+function buildAutodocUrl(intervention, carName) {
+  const l = intervention.toLowerCase();
+  let path = null;
+  for (const [k,v] of Object.entries(AUTODOC_PATHS)) { if (l.includes(k)) { path=v; break; } }
+  const brand = carName ? carName.split(' ')[0].toLowerCase() : null;
+  if (path && brand) return `https://www.autodoc.es/repuestos/${path}/${brand}`;
+  if (path) return `https://www.autodoc.es/repuestos/${path}`;
+  return `https://www.autodoc.es/search?search=${encodeURIComponent((carName?carName+' ':'')+intervention)}`;
+}
+
+function updateAffiliateBar(intervention) {
+  const bar = document.getElementById('affiliateBar');
+  const car = getActiveCar();
+  const name = intervention.trim();
+  if (!name || name.length < 3) { bar.classList.remove('visible'); return; }
+  const carName = car ? car.name : '';
+  document.getElementById('btnAmazon').href  = buildAmazonUrl(name, carName);
+  document.getElementById('btnAutodoc').href = buildAutodocUrl(name, carName);
+  bar.classList.add('visible');
+}
+
+// ── INFO DATABASE ──────────────────────────────────────────
+const INFO_DB = {
+  'filtro de aire':{ icon:'💨', interval:15000, signals:['Aceleración perezosa','Consumo elevado','Humo negro por el escape','Motor que tira al acelerar'], tips:['Revísalo cada vez que hagas el aceite','En zonas con polvo, cámbialo antes'] },
+  'filtro de habitáculo':{ icon:'🌬️', interval:15000, signals:['Mal olor dentro del coche','Cristales que se empañan rápido','AC menos eficaz','Alergias dentro del coche'], tips:['Suele estar detrás de la guantera, fácil de cambiar','Cámbialo antes del verano'] },
+  'filtro de aceite':{ icon:'🛢️', interval:10000, signals:['Cámbialo siempre con el aceite','Presión de aceite baja','Ruido metálico en el motor'], tips:['Nunca cambies el aceite sin cambiar el filtro'] },
+  'aceite motor':{ icon:'🛢️', interval:10000, signals:['Nivel bajo en la varilla','Color oscuro o negro','Ruido metálico en arranque','Consumo de aceite elevado'], tips:['Comprueba el nivel cada 3.000 km','Usa siempre la viscosidad recomendada'] },
+  'pastillas de freno':{ icon:'🛑', interval:30000, signals:['Chirrido al frenar','Vibración en el pedal','Frena peor','Testigo de frenos encendido'], tips:['Revisa los discos al cambiar las pastillas','Las traseras duran más que las delanteras'] },
+  'discos de freno':{ icon:'⭕', interval:60000, signals:['Vibración al frenar','Ranuras visibles en el disco','Coche tira a un lado','Ruido metálico constante'], tips:['Cámbialos siempre en pareja por eje','Haz frenadas progresivas tras el cambio'] },
+  'bujías':{ icon:'⚡', interval:30000, signals:['Arranque difícil','Tirones al acelerar','Consumo elevado','Check engine encendido'], tips:['Las de iridio duran hasta 60.000 km','Comprueba también los cables de alta tensión'] },
+  'correa de distribución':{ icon:'⚙️', interval:60000, signals:['No esperes síntomas — si se rompe destruye el motor','Revisa también los años, no solo km'], tips:['Máximo 5–6 años aunque no llegues a los km','Cambia también la bomba de agua a la vez'] },
+  'filtro de combustible':{ icon:'⛽', interval:30000, signals:['Pérdida de potencia','Tirones a alta velocidad','Difícil de arrancar','Motor que se para'], tips:['En diésel es más crítico que en gasolina'] },
+  'líquido de frenos':{ icon:'💧', interval:40000, signals:['Pedal esponjoso o blando','Frena peor','Líquido oscuro en el depósito'], tips:['Cámbialo cada 2 años mínimo independientemente de km'] },
+  'refrigerante':{ icon:'🌡️', interval:60000, signals:['Motor se calienta','Testigo de temperatura encendido','Nivel bajo','Olor dulce bajo el capó'], tips:['Nunca abras el tapón en caliente','Mezcla al 50% con agua destilada'] },
+  'amortiguadores':{ icon:'🔩', interval:80000, signals:['El coche bota en badenes','Cabeceo al frenar','Desgaste irregular de neumáticos','Ruido clonc'], tips:['Cámbialos siempre en pareja por eje','Aprovecha para revisar rótulas y silentblocks'] },
+  'neumáticos':{ icon:'🔄', interval:40000, signals:['Dibujo bajo 1,6mm (mínimo legal)','Desgaste irregular','Vibraciones en autopista','Más de 5–6 años'], tips:['Comprueba la presión mensualmente','Rota cada 10.000 km para desgaste uniforme'] },
+  'batería':{ icon:'🔋', interval:50000, signals:['Arranque lento','Testigos al arrancar','Más de 4–5 años','Alternador que no carga'], tips:['En invierno rinden peor','Con el coche parado usa un mantenedor de carga'] },
+  'escobillas limpiaparabrisas':{ icon:'🌧️', interval:20000, signals:['Rayaduras en el cristal','Ruido al limpiar','Goma cuarteada','Vibración en marcha'], tips:['Cámbialas antes del otoño','No olvides la escobilla trasera'] },
+  'volante':{ icon:'🎡', interval:null, signals:['Modificación estética','Asegúrate de compatibilidad con el airbag'], tips:['Necesitas un adaptador (moyeu) específico','Un diámetro menor da sensación más deportiva'] },
+  'pomo de cambios':{ icon:'🕹️', interval:null, signals:['Modificación estética','Comprueba la rosca (M10, M12...)'], tips:['Los pomos más pesados mejoran la sensación de cambio'] },
+  'revisión general':{ icon:'🔍', interval:20000, signals:['Revisa niveles: aceite, refrigerante, frenos','Comprueba luces, escobillas y neumáticos'], tips:['Hazla coincidiendo con el cambio de aceite'] },
+};
+
+function getInfo(name) {
+  const l = name.toLowerCase().trim();
+  for (const [k,v] of Object.entries(INFO_DB)) { if (l.includes(k)) return { key:k, ...v }; }
+  return null;
+}
+
+function showInfoCard(name) {
+  const card = document.getElementById('infoCard');
+  const info = getInfo(name);
+  if (!info) { card.style.display='none'; return; }
+  document.getElementById('infoIcon').textContent = info.icon;
+  document.getElementById('infoName').textContent = name.charAt(0).toUpperCase()+name.slice(1);
+  document.getElementById('infoInterval').textContent = info.interval ? 'cada '+info.interval.toLocaleString('es-ES')+' km' : 'sin intervalo fijo';
+  document.getElementById('infoBody').innerHTML = `
+    <div>
+      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Señales de que toca</div>
+      ${info.signals.map(s=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${s}</div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:0.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.35rem">Consejos</div>
+      ${info.tips.map(t=>`<div style="font-size:0.78rem;display:flex;gap:0.4rem;line-height:1.45;margin-bottom:0.2rem"><span style="color:var(--car-accent)">·</span>${t}</div>`).join('')}
+    </div>`;
+  card.style.display = 'flex';
+}
+
+// ── IMPORT / EXPORT ────────────────────────────────────────
 function exportJSON() {
   dl('garage-log.json', 'application/json', JSON.stringify(state, null, 2));
   toast('Exportado: garage-log.json');
@@ -1775,26 +1631,19 @@ function dl(name, type, content) {
   a.download = name; a.click();
 }
 
-// ── MODALS ────────────────────────────────────────────────
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
+// ── MODALS ─────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => {
-    if (e.target === el) el.classList.remove('open');
-  });
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
 });
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));
 });
 
-// ── TOAST ─────────────────────────────────────────────────
+// ── TOAST ──────────────────────────────────────────────────
 let toastTimer;
 function toast(msg, isError = false) {
   const el = document.getElementById('toast');
@@ -1806,18 +1655,17 @@ function toast(msg, isError = false) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-// ── HELPERS ───────────────────────────────────────────────
+// ── HELPERS ────────────────────────────────────────────────
 function today() {
   const d = new Date();
   return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 }
-
 function isoToDisplay(iso) {
   const [y,m,d] = iso.split('-');
   return `${d}/${m}/${y}`;
 }
 
-// ── INTERVENTION CATEGORIES ───────────────────────────────
+// ── INTERVENTIONS ──────────────────────────────────────────
 const INTERVENTIONS = [
   { name:'Aceite motor',             icon:'🛢️', cat:'motor' },
   { name:'Filtro de aceite',         icon:'🛢️', cat:'motor' },
@@ -1886,7 +1734,7 @@ let currentCat = 'todas';
 
 function filterCatTab(cat, el) {
   currentCat = cat;
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#nuevaCatTabs .cat-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   renderInterventionGrid();
 }
@@ -1894,9 +1742,19 @@ function filterCatTab(cat, el) {
 function renderInterventionGrid() {
   const grid = document.getElementById('interventionGrid');
   if (!grid) return;
-  const filtered = currentCat === 'todas' ? INTERVENTIONS : INTERVENTIONS.filter(i => i.cat === currentCat);
-  const current  = document.getElementById('fName').value;
-  grid.innerHTML  = filtered.map(i => `
+  const typed = (document.getElementById('fName')?.value || '').toLowerCase().trim();
+  let filtered;
+  if (typed.length >= 1) {
+    filtered = INTERVENTIONS.filter(i => i.name.toLowerCase().includes(typed));
+  } else {
+    filtered = currentCat === 'todas' ? INTERVENTIONS : INTERVENTIONS.filter(i => i.cat === currentCat);
+  }
+  const current = document.getElementById('fName').value;
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="padding:1.5rem 1.25rem;color:var(--muted);font-size:0.82rem;grid-column:1/-1">Sin opciones coincidentes. Escribe el nombre directamente.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(i => `
     <div class="intervention-chip ${current === i.name ? 'selected' : ''}" onclick="selectIntervention('${i.name.replace(/'/g,"\\'")}')">
       <span class="chip-icon">${i.icon}</span>
       <span>${i.name}</span>
@@ -1917,12 +1775,11 @@ function onFNameInput(val) {
   renderInterventionGrid();
 }
 
-// Auto-fill km
 document.getElementById('fKm').addEventListener('focus', function() {
   if (!this.value && getActiveCar()?.km) this.value = getActiveCar().km;
 });
 
-// ── CATEGORY HELPERS ──────────────────────────────────────
+// ── CATEGORY HELPERS ───────────────────────────────────────
 function getCatForName(name) {
   const l = name.toLowerCase();
   return INTERVENTIONS.find(i => l.includes(i.name.toLowerCase()) || i.name.toLowerCase().includes(l)) || { icon:'🔧', cat:'otros' };
@@ -1933,17 +1790,30 @@ function getCatColor(cat) {
   return c[cat] || c.otros;
 }
 
-// ── HISTORIAL CARDS ───────────────────────────────────────
+// ── HISTORIAL ──────────────────────────────────────────────
 function renderHistorial() {
   const car       = getActiveCar();
   const container = document.getElementById('historialBody');
   if (!car || !car.records.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>Sin registros todavía.<br>Ve a "Nueva intervención" para añadir.</p></div>`;
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <rect x="12" y="8" width="32" height="40" rx="5"/>
+          <line x1="20" y1="22" x2="36" y2="22"/>
+          <line x1="20" y1="30" x2="36" y2="30"/>
+          <line x1="20" y1="38" x2="28" y2="38"/>
+          <circle cx="40" cy="44" r="9" fill="var(--surface)"/>
+          <line x1="40" y1="40" x2="40" y2="48"/>
+          <line x1="36" y1="44" x2="44" y2="44"/>
+        </svg>
+        <strong>Sin registros</strong>
+        <p>Ve a "Nueva intervención" para añadir el primer registro.</p>
+      </div>`;
     return;
   }
 
-  const q     = (document.getElementById('filterInput')?.value || '').toLowerCase();
-  const fcat  = document.getElementById('filterCat')?.value || '';
+  const q    = (document.getElementById('filterInput')?.value || '').toLowerCase();
+  const fcat = document.getElementById('filterCat')?.value || '';
   const curKm = car.km || 0;
 
   const filtered = [...car.records]
@@ -1962,7 +1832,7 @@ function renderHistorial() {
     return;
   }
 
-  container.innerHTML = filtered.map(r => {
+  container.innerHTML = filtered.map((r, idx) => {
     const meta     = getCatForName(r.name);
     const color    = getCatColor(meta.cat);
     const nextKm   = r.km + r.interval;
@@ -1973,7 +1843,7 @@ function renderHistorial() {
     const urgCls   = pct > 0.3 ? 'badge-ok' : pct > 0 ? 'badge-warn' : 'badge-danger';
 
     return `
-    <div class="hist-card">
+    <div class="hist-card" style="animation-delay:${idx * 0.04}s">
       <div class="hist-card-accent" style="background:${color}"></div>
       <div class="hist-card-icon">${meta.icon}</div>
       <div class="hist-card-body">
@@ -1994,7 +1864,7 @@ function renderHistorial() {
   }).join('');
 }
 
-// ── PIEZAS PAGE ───────────────────────────────────────────
+// ── PIEZAS ─────────────────────────────────────────────────
 let currentPiezasCat = 'todas';
 
 function renderPiezasPage() {
@@ -2023,10 +1893,18 @@ function filterPiezasCat(cat, el) {
 function renderPiezasGrid() {
   const grid = document.getElementById('piezasGrid');
   if (!grid) return;
-  const filtered = currentPiezasCat === 'todas'
-    ? INTERVENTIONS
-    : INTERVENTIONS.filter(i => i.cat === currentPiezasCat);
+  const typed = (document.getElementById('piezaSearch')?.value || '').toLowerCase().trim();
+  let filtered;
+  if (typed.length >= 1) {
+    filtered = INTERVENTIONS.filter(i => i.name.toLowerCase().includes(typed));
+  } else {
+    filtered = currentPiezasCat === 'todas' ? INTERVENTIONS : INTERVENTIONS.filter(i => i.cat === currentPiezasCat);
+  }
   const current = document.getElementById('piezaSearch').value;
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="padding:1.5rem;color:var(--muted);font-size:0.82rem;grid-column:1/-1">Sin resultados para "${typed}".</div>`;
+    return;
+  }
   grid.innerHTML = filtered.map(i => `
     <div class="intervention-chip ${current === i.name ? 'selected' : ''}" onclick="selectPieza('${i.name.replace(/'/g,"\\'")}')">
       <span class="chip-icon">${i.icon}</span>
@@ -2041,6 +1919,7 @@ function selectPieza(name) {
 }
 
 function onPiezaSearch(val) {
+  renderPiezasGrid();
   const result = document.getElementById('piezasResult');
   const empty  = document.getElementById('piezasEmpty');
   if (!val || val.length < 2) { result.style.display='none'; empty.style.display='block'; return; }
@@ -2068,7 +1947,7 @@ function onPiezaSearch(val) {
   empty.style.display  = 'none';
 }
 
-// ── INIT ──────────────────────────────────────────────────
+// ── INIT ───────────────────────────────────────────────────
 load();
 renderSidebar();
 updateKmChip();
@@ -2083,6 +1962,13 @@ if (!state.cars.length) {
   document.getElementById('noCarState').style.display = 'flex';
 } else {
   showPage('dashboard');
+}
+
+// ── PWA SERVICE WORKER ─────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
 }
 </script>
 </body>
